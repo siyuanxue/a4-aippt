@@ -1,0 +1,19 @@
+# -*- mode: python -*-
+
+# Inherit the environment from my parent.
+Import('env')
+
+# Make a copy of the environment, so my changes are limited in this directory and sub-directories.
+env = env.Clone()
+
+test_cpps = [str(fn) for fn in Glob('*.cpp') ]
+
+sources=  [
+    '#test/dotest.cpp',
+    test_cpps
+]
+
+util_test = env.aTest(target = 'loader_test',
+                     source = sources,
+                     LIBS = env['all_unittest_libs'] + ['boost_serialization'],
+                     );

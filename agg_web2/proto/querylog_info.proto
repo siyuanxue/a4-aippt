@@ -1,0 +1,38 @@
+package A4.AGG.proto;
+message QueryLogInfoV2
+{
+required string mNormalizedUrl = 1;
+repeated uint64 mCrawlTimeVec = 2;
+repeated uint32 mPosVec = 3;
+required uint32 mLastPos = 4;
+required uint32 mMinPos = 5;
+required uint32 mMaxPos = 6;
+required double mAvgPos = 7;
+required uint32 mCrawlNum = 8;
+required uint64 mLastCrawlTime = 9;
+required string mUniqId = 10;
+required string mQuery = 11;
+}
+message QueryLogInfoV2Vec
+{
+repeated QueryLogInfoV2 elems = 1;
+}
+message Uint32Uint64Pair
+{
+required uint32 first = 1;
+required uint64 second = 2;
+}
+message KUint32Uint64Pair
+{
+required string key = 1;
+required Uint32Uint64Pair value = 2;
+}
+message QueryLogInfoVec
+{
+repeated KUint32Uint64Pair elems = 1;
+}
+message QueryLogInfoWrapper
+{
+optional QueryLogInfoV2Vec mQueryLogV2Vec = 1;
+optional QueryLogInfoVec mQueryLogVec = 2;
+}

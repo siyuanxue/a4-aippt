@@ -1,0 +1,73 @@
+{
+    "gig_config": {
+        "connection_config": {
+            "http": {
+                "queue_size": 1,
+                "thread_num": 300
+            }, 
+            "arpc": {
+                "queue_size": 1000, 
+                "thread_num": 1
+            }, 
+            "tcp": {
+                "queue_size": 1000, 
+                "thread_num": 100
+            }
+        }, 
+        "subscribe_config": {
+            "local": [
+            ],
+            "cm2": {
+                "zk_host": "smzk-sourth.vip.tbsite.net:2181",
+                "zk_path": "/cm_server",
+                "cm2_part": [
+                    ],
+                "cm2_part_no_topo_info": [
+                    "sc_aol_caculate"
+                    ],
+                "cm2_group": [
+                    ],
+                "enable_wings": false,
+                "consider_cm2_health": true
+            }
+        }, 
+        "misc_config": {
+            "consistent_hash_virtual_point": 2000, 
+            "weight_update_step": 0.5, 
+            "snapshot_log_count": 100
+        }
+    }, 
+    "default_timeout": 500,
+    "flow_config": {
+        "query_aol": {
+            "flow_control_config": {
+                "begin_degrade_latency": 15,
+                "full_degrade_latency": 60,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 5.0,
+                "probe_percent": 0.02, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 80
+        },
+        "default": {
+            "flow_control_config": {
+                "et_wait_time_factor": 1000, 
+                "latency_upper_limit_ms": 10000000,
+                "et_trigger_percent": 1.0,
+                "probe_percent": 0.02,
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "latency_upper_limit_percent": 10000000.0,
+                "et_min_wait_time": 1000,
+                "begin_degrade_latency": 200,
+                "full_degrade_latency": 500
+            }, 
+            "timeout": 500
+        }
+    }
+}

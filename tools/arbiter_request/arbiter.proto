@@ -1,0 +1,59 @@
+package proto.agg_web_arbiter;
+
+message PBKVPair {
+    optional string key = 1;
+    optional bytes value = 2;
+}
+
+message ScResult
+{
+    required bytes name = 1;			//sc的名字
+    required bytes content = 2;	     		//sc的原始xml内容
+    optional bytes id = 3;           		//sc的唯一标识: <sc_id>
+    optional bytes subType = 4;      		//sc的子类型: <sc_stype>
+    optional bytes dataSource = 5;   		//sc的数据源: <sc_ds>
+    optional bytes mainUrl = 6;      		//sc的主url: 由<main_url_xpath>指定xpath
+    optional bytes mainTitle = 7;    		//sc的主title: 由<main_title_xpath>指定xpath
+    repeated bytes subUrls = 8;	     		//sc的子节点url: 由<sub_url_xpath>指定xpath
+    repeated bytes subTitles = 9;    		//sc的子节点title: 由<sub_title_xpath>指定xpath
+    optional int32 position = 10;    		//sc的默认位置: <POSITION>
+    optional int32 clickFeedback = 11;          //sc的点击反馈: <clickfeedback>
+    optional int32 timeSensitive = 12;		//sc的时间敏感度: <time_sensitive>
+    optional int32 makeupPos = 13; 		//sc的固定位置: <MakeUpPos>
+    optional int32 makeupPriority = 14;	        //sc抢占同一位置时的优先级: <MakeUpPriority>
+    optional bytes trace = 15;	     		//sc的trace信息
+    repeated PBKVPair kvMap = 16;		//agg展现日志记录的额外信息
+    optional bytes processName = 17;            //sc进程名
+    optional bytes spread = 18;	 		//蓝光标记
+    optional bytes blurayGroupName = 19;	//蓝光组标记
+    optional bytes blurayIsCore = 20;	        //蓝光核区标记
+    optional bytes oriName = 21;                //未经过arbiter改写的sc名字
+    optional bytes hide = 22;	  		//SC是否展示的标志
+}
+
+message CacheInfo {
+    optional bool needRefreshCache = 1;
+    optional bytes cacheScList = 2;
+}
+
+message ArbiterResult
+{
+    optional bytes trace = 1;			//arbiter的trace信息
+    optional int32 latency = 2;		        //arbiter的处理延时
+    repeated ScResult scResults = 3;		//所有sc结果的集合
+
+    optional CacheInfo cacheInfo = 4;           //arbiter传给sc_agg的sc cache信息
+
+    repeated bytes throwInFilteredSc = 5;       //arbiter 投放过滤掉的sc
+    repeated bytes bucketFilteredSc = 6;        //arbiter 分桶过滤掉的sc
+    repeated bytes deadLinkFilteredSc = 7;      //arbiter 死链过滤掉的sc
+    repeated bytes blacklistFilteredSc = 8;     //arbiter 黑名单过滤掉的sc
+    repeated bytes exclusiveFilteredSc = 9;     //arbiter 互斥过滤掉的sc
+
+    repeated bytes errorSc = 20;     //其他错误sc
+    repeated bytes xmldocerrorSc = 21;     //arbiter xml解析失败的sc
+    repeated bytes unkownSc = 22;     //arbiter 名字未知sc
+    repeated bytes timeoutSc = 23;     //超时或connection refused sc
+    repeated bytes cachedSc = 24;     //从cache中读取出来的sc
+    optional bytes appTraceInfo = 25; //trace 指定app
+}

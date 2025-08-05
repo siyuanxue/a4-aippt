@@ -1,0 +1,500 @@
+#! /usr/bin/env python
+import pdb
+import optparse
+import os
+import sys
+import re
+import signal
+import time
+import urllib
+import urllib2
+import resource
+import subprocess
+
+
+usageStr = '''
+usage:
+    a4_tools cmd [options]
+commands:
+    start                      start a4
+    stop                       stop a4
+    reload                     reload a4 graceful
+    update                     update data graceful
+    stopnode[sn]               stop [upstream|group|peer] node
+    recovernode[rn]            recover [upstream|group|peer] node
+    getnodestatus[gn]          get [upstream|group|peer] node status
+options:
+   -h help, --help=help
+'''
+
+class A4Config:
+    def __init__(self, fileName):
+        self.fileName = fileName
+        self.listenSpec = None
+        self.controlCmdLocation = None
+
+    def getListenSpec(self):
+        if self.listenSpec is None:
+            if not self.parse():
+                return None
+        return self.listenSpec
+
+    def getControlCmdLocation(self):
+        if self.controlCmdLocation is None:
+            if not self.parse():
+                return None
+        return self.controlCmdLocation
+
+    def parse(self):
+        content = ''
+        try:
+            content =  open(self.fileName).read()
+        except Exception, err:
+            print >> sys.stderr, "read [%s] failed [%s]" % (self.fileName, str(err))
+            return False
+        self.listenSpec = self.parseTag(content, 'listen')
+        if self.listenSpec is None:
+            print >> sys.stderr, "get [listen] from [%s] failed" % (self.fileName)
+            return False
+        self.controlCmdLocation = self.parseTag(content, 'control_cmd_location')
+        if self.controlCmdLocation is None:
+            print >> sys.stderr, "get [control_cmd_location] from [%s] failed" % (self.fileName)
+            return False
+        return True
+
+    def parseTag(self, content, tag):
+        startTag = '<' + tag + '>'
+        startPos = content.find(startTag)
+        if startPos == -1:
+            return None
+        startPos += len(startTag)
+        endTag = '</' + tag + '>'
+        endPos = content.find(endTag, startPos)
+        if endPos == -1:
+            return None
+        return content[startPos:endPos].strip()
+    
+class CommandBase:
+    def __init__(self):
+        self.options = None
+        self.args = None
+        self.parser = optparse.OptionParser()
+
+    def addOptions(self):
+        pass
+
+    def checkArgs(self):
+        pass
+
+    def parseOptions(self, argv):
+        self.addOptions()
+        (self.options, self.args) = self.parser.parse_args(argv)
+        if not self.checkArgs():
+            print >> sys.stderr, self.getUsage()
+            return False
+        return True
+
+    def getListenSpec(self):
+        config = A4Config(self.options.configFile)
+        return config.getListenSpec()
+
+    def getControlCmdLocation(self):
+        config = A4Config(self.options.configFile)
+        return config.getControlCmdLocation()
+
+    def getMasterPid(self):
+        listenSpec = self.getListenSpec()
+        elems = listenSpec.split(':')
+        if len(elems) != 2:
+            return None
+        port = elems[1]
+        cmd = "netstat -apn | grep a4 |grep LISTEN| grep ':%s'" % port
+        (stdout, stderr) = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, 
+                                            stderr=subprocess.PIPE).communicate()
+        matches = re.findall('(\d+)/', stdout)
+        if len(matches) != 1:
+            return None
+
+        pidByListenPort = matches[0]
+        ppidByListenPort = self.getParentPid(pidByListenPort)
+        if ppidByListenPort is None:
+            return None
+        if ppidByListenPort == "1":
+            return int(pidByListenPort)
+        else:
+            return int(ppidByListenPort)
+
+    def getParentPid(self, childPid):
+        cmd = 'ps -efwww | grep %s | grep -v grep' % childPid
+        (stdout, stderr) = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, 
+                                            stderr=subprocess.PIPE).communicate()
+        stdout = stdout.strip()
+        if stdout == "":
+            return None
+        lines = stdout.split('\n')
+        for line in lines:
+            elems = line.split()
+            if childPid == elems[1]:
+                return elems[2]
+        return None
+
+    def getChildPidList(self, pid):
+        pidList = []
+        cmd = 'ps -efwww | grep %s | grep -v grep' % pid
+        (stdout, stderr) = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+                                                stderr=subprocess.PIPE).communicate()
+        stdout = stdout.strip()
+        if stdout == "":
+            return pidList
+        lines = stdout.split('\n')
+        for line in lines:
+            elems = line.split()
+            if str(pid) == elems[2]:
+                pidList.append(elems[1])
+        return pidList
+
+    def sendGetRequest(self, args):
+        spec = self.getListenSpec()
+        if spec is None:
+            return None
+        location = self.getControlCmdLocation();
+        if location is None:
+            return None
+        url = 'http://' + spec + location + '?' + args
+        
+        try:
+            req = urllib2.Request(url)
+            response = urllib2.urlopen(req)
+            content = response.read()
+        except Exception, e:
+            print >> sys.stderr, "request http failed [%s]" % str(e)
+            return None
+        return content
+
+    def getUsage(self):
+        return ''
+
+class StartCommand(CommandBase):
+    startUsage = '''usage:
+    a4_tool start -c config-file -l log-file 
+options:
+      -c config-file
+      -l a4-log-file
+      -p preload-file
+example:
+      a4_tool start -c conf/a4_config.xml -l conf/a4_logger.conf -p /usr/lib64/libtcmalloc.so.0
+'''
+    def addOptions(self):
+        self.parser.add_option('-c', None, action='store', dest='configFile', help='a4 config file')
+        self.parser.add_option('-l', None, action='store',dest='logFile', help='a4 log config file')
+        self.parser.add_option('-p', None, action='append', default=[], dest='preload', help='preload file')
+
+    def checkArgs(self):
+        if not self.options.configFile or not self.options.logFile:
+            return False
+        for preload in self.options.preload:
+            if not os.path.exists(preload):
+                print >> sys.stderr, "[%s] not existed" % (preload)
+                return False
+        return True
+
+    def checkService(self):
+        args = urllib.urlencode({'type':'check'})
+        resp = self.sendGetRequest(args)
+        if resp is None:
+            return False
+        return True
+
+    def execute(self, argv):
+        if not self.parseOptions(argv):
+            return False
+        
+        if self.getMasterPid() is not None:
+            print >> sys.stderr, "start a4 failed [a4 already started]"
+            return False
+
+        #set LD_PRELOAD
+        bakPath = None
+        if os.environ.has_key('LD_PRELOAD'):
+            bakPath = os.environ['LD_PRELOAD']
+        path = ':'.join(self.options.preload)
+        if bakPath:
+            path = path + ':' + bakPath
+        os.environ['LD_PRELOAD'] = path
+
+        #set LD_LIBRARY_PATH Todo: add more dependency path
+        realPath = os.path.dirname(os.path.realpath(__file__))
+        libPath = '%s/../lib64:%s/../../lib64:%s/../lib:%s/../../lib:/usr/local/lib/:/usr/local/lib64' % \
+            (realPath, realPath, realPath, realPath)
+        if os.environ.has_key('LD_LIBRARY_PATH'):
+            ldLibPath = os.environ['LD_LIBRARY_PATH']
+        else:
+            ldLibPath = ''
+        os.environ['LD_LIBRARY_PATH'] = libPath + ':' + ldLibPath
+
+        #set core limit
+        try:
+            resource.setrlimit(resource.RLIMIT_CORE, (-1, -1))
+        except ValueError:
+            print >> sys.stderr, 'setrlimit core failed'
+        cmd = '%s/a4 -c %s -l %s' % \
+            (realPath, self.options.configFile, self.options.logFile)
+
+        #start a4
+        os.system(cmd)
+        print >> sys.stderr, "a4 is starting ..."
+
+        #check a4 status
+        for tickCount in range(0, 120):
+            if self.getMasterPid() is None:
+                print >> sys.stderr, "start a4 failed [start failed]"
+                return False
+            if self.checkService():
+                print >> sys.stderr,  "start a4 success"
+                return True
+            time.sleep(1)
+
+        print >> sys.stderr, "start a4 failed [start a4 timeout]"
+        return False
+
+    def getUsage(self):
+        return self.startUsage
+
+class StopCommand(CommandBase):
+    stopUsage = '''usage:
+    a4_tool stop -c config-file 
+options:
+      -c config-file
+example:
+      a4_tool stop -c conf/a4_config.xml
+'''
+    def addOptions(self):
+        self.parser.add_option('-c', None, action='store', dest='configFile', help='a4 config file')
+
+    def checkArgs(self):
+        if not self.options.configFile:
+            return False
+        return True
+
+    def execute(self, argv):
+        if not self.parseOptions(argv):
+            return False
+        masterPid = self.getMasterPid()
+        if masterPid is None:
+            print >> sys.stderr, "stop a4 failed [a4 not alive]"
+            return False
+        os.kill(masterPid, signal.SIGQUIT)
+        print >> sys.stderr, "a4 is stopping..."
+        for tickCount in range(0, 60):
+            newMasterPid = self.getMasterPid()
+            if newMasterPid is None or newMasterPid != masterPid:
+                print >> sys.stderr, "stop a4 success"
+                return True
+            time.sleep(1)
+
+        print >> sys.stderr, "stop a4 failed [check stop timeout]"
+        return False
+    
+    def getUsage(self):
+        return self.stopUsage
+
+class ReloadCommand(CommandBase):
+    reloadUsage = '''usage:
+    a4_tool reload -c config-file 
+options:
+      -c config-file
+example:
+      a4_tool reload -c conf/a4_config.xml
+'''
+    def addOptions(self):
+        self.parser.add_option('-c', None, action='store', dest='configFile', help='a4 config file')
+
+    def checkArgs(self):
+        if not self.options.configFile:
+            return False
+        return True
+
+    def execute(self, argv):
+        if not self.parseOptions(argv):
+            return False
+        masterId = self.getMasterPid()
+        if masterId is None:
+            print >> sys.stderr, "reload a4 failed [a4 not alive]"
+            return False
+        childrenPids = self.getChildPidList(masterId)
+        if childrenPids is None or len(childrenPids) == 0:
+            print >> sys.stderr, "reload a4 failed [no a4 worker process alive]"
+            return False
+        if len(childrenPids) > 1:
+            print >> sys.stderr, "reload a4 failed [a4 is reloading]"
+            return False
+        oldWorkerPid = childrenPids[0]
+        os.kill(masterId, signal.SIGHUP)
+        print >> sys.stderr, "a4 is reloading ..."
+        time.sleep(1)
+        for tickCount in range(0, 100):
+            childrenPids = self.getChildPidList(masterId)
+            if len(childrenPids) == 1:
+                if oldWorkerPid not in childrenPids:
+                    print >> sys.stderr, "reload a4 success"
+                    return True
+                else:
+                    print >> sys.stderr, "reload a4 failed [new process start failed]"
+                    return False
+            else:
+                time.sleep(1)
+        print >> sys.stderr, 'reload a4 failed [reload timeout]'
+        return False
+
+    def getUsage(self):
+        return self.reloadUsage
+
+class UpdateCommand(CommandBase):
+    updateUsage = '''usage:
+    a4_tool update -c config-file -d data-name
+options:
+      -c config-file
+      -d data-name
+example:
+      a4_tool update -c conf/a4_config.xml -d makeup
+'''
+    def addOptions(self):
+        self.parser.add_option('-c', None, action='store', dest='configFile', help='a4 config file')
+        self.parser.add_option('-d', None, action='store', dest='dataName', help='data name in a4 config')
+
+    def checkArgs(self):
+        if not self.options.configFile:
+            return False
+        if not self.options.dataName:
+            return False
+        return True
+
+    def execute(self, argv):
+        if not self.parseOptions(argv):
+            return False
+        args = urllib.urlencode({'type':'data', 'op':'update', 'name':self.options.dataName})
+        resp = self.sendGetRequest(args)
+        if resp is None:
+            print >> sys.stderr, "update [%s] failed" % self.options.dataName
+            return False
+        print >> sys.stderr, "update [%s] success" % self.options.dataName
+        return True
+    
+    def getUsage(self):
+        return self.updateUsage
+
+class NodeCommand(CommandBase):
+    nodeUsage = '''usage:
+    a4_tool [stopnode|recovernode|getnodestatus] -c config-file -u upstream-name -g group-name -p peer-id
+options:
+      -c config-file
+      -u upstream-name
+      -g group-name
+      -p peer-id
+example:
+      a4_tool stopnode -c conf/a4_config.xml -u qp -g group1
+'''
+    def addOptions(self):
+        self.parser.add_option('-c', None, action='store', dest='configFile', help='a4 config file')
+        self.parser.add_option('-u', None, action='store', dest='upstreamName', help='upstream node name in a4 config')
+        self.parser.add_option('-g', None, action='store', dest='groupName', help='group node name in a4 config')
+        self.parser.add_option('-p', None, action='store', dest='peerId', help='peer node id in a4 config')
+
+    def checkArgs(self):
+        if not self.options.configFile:
+            return False
+        if not self.options.upstreamName:
+            return False
+        return True
+
+    def getUsage(self):
+        return self.nodeUsage
+
+class StopNodeCommand(NodeCommand):
+    def execute(self, argv):
+        if not self.parseOptions(argv):
+            return False
+        if self.options.groupName is None:
+            args = urllib.urlencode({'type':'node', 'op':'stopnode', 'upstream':self.options.upstreamName})
+        elif self.options.peerId is None:
+            args = urllib.urlencode({'type':'node', 'op':'stopnode', 'upstream':self.options.upstreamName, 'group':self.options.groupName})
+        else:
+            args = urllib.urlencode({'type':'node', 'op':'stopnode', 'upstream':self.options.upstreamName, 'group':self.options.groupName, 'peer':self.options.peerId})
+        resp = self.sendGetRequest(args)
+        if resp is None:
+            print >> sys.stderr, "stop node failed"
+            return False
+        print >> sys.stderr, "stop node success"
+        return True        
+
+class RecoverNodeCommand(NodeCommand):
+    def execute(self, argv):
+        if not self.parseOptions(argv):
+            return False
+        if self.options.groupName is None:
+            args = urllib.urlencode({'type':'node', 'op':'recovernode', 'upstream':self.options.upstreamName})
+        elif self.options.peerId is None:
+            args = urllib.urlencode({'type':'node', 'op':'recovernode', 'upstream':self.options.upstreamName, 'group':self.options.groupName})
+        else:
+            args = urllib.urlencode({'type':'node', 'op':'recovernode', 'upstream':self.options.upstreamName, 'group':self.options.groupName, 'peer':self.options.peerId})
+        resp = self.sendGetRequest(args)
+        if resp is None:
+            print >> sys.stderr, "recover node failed"
+            return False
+        print >> sys.stderr, "recover node success"
+        return True        
+
+class GetNodeCommand(NodeCommand):
+    def execute(self, argv):
+        if not self.parseOptions(argv):
+            return False
+        args = urllib.urlencode({'type':'node', 'op':'getnodestatus', 'upstream':self.options.upstreamName})
+        resp = self.sendGetRequest(args)
+        if resp is None:
+            print >> sys.stderr, "get node status failed"
+            return False
+        print >> sys.stderr, resp
+        return True        
+
+class A4Tool:
+    def __init__(self):
+        pass
+
+    def printUsage(self):
+        print >> sys.stderr, usageStr
+    
+    def execute(self, argv):
+        if len(argv) < 2:
+            self.printUsage()
+            return False
+        cmdStr = argv[1]
+        if cmdStr == 'start':
+            self.cmd = StartCommand()
+        elif cmdStr == 'stop':
+            self.cmd = StopCommand()
+        elif cmdStr == 'reload':
+            self.cmd = ReloadCommand()
+        elif cmdStr == 'update':
+            self.cmd = UpdateCommand()
+        elif cmdStr in ['stopnode', 'sn']:
+            self.cmd = StopNodeCommand()
+        elif cmdStr in ['recovernode', 'rn']:
+            self.cmd = RecoverNodeCommand()
+        elif cmdStr in ['getnodestatus', 'gn']:
+            self.cmd = GetNodeCommand()
+        else:
+            print >> sys.stderr, "invalid subcommand [%s]" % cmdStr
+            self.printUsage()
+            return False
+        return self.cmd.execute(sys.argv[2:])
+    
+if __name__ == '__main__':
+    filePath = './a4_conf.xml'
+    tool = A4Tool()
+    ret = tool.execute(sys.argv)
+    if ret:
+        sys.exit(0)
+    else:
+        sys.exit(1)
+
+

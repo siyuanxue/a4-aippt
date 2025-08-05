@@ -1,0 +1,7 @@
+{
+    "sessclose":"1",
+    "evidence_cutoff":"3",
+    "question_num_cut":"5",
+    "use_question_trigger":"true",
+    "hit": "10"
+}

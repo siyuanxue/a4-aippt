@@ -1,0 +1,1075 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<A4>
+    <main>
+        <listen>0.0.0.0:$(port)</listen>
+        <net_io_thread_count>4</net_io_thread_count>
+        <keep_alive_timeout>600000</keep_alive_timeout>
+        <idle_timeout>300000</idle_timeout>
+        <thread_count>128</thread_count>
+        <task_queue_count>1000</task_queue_count>
+        <amonitor_service_name>$(amonitor_service_name)</amonitor_service_name>
+        <allstar_server_spec>42.156.215.219:8080/setgraph</allstar_server_spec>
+        <amonitor_agent_port>$(amonitor_agent_port)</amonitor_agent_port>
+        <workdir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/</workdir>
+        <control_cmd_location>/cmd</control_cmd_location>
+        <control_task_queue_count>1</control_task_queue_count>
+        <close_std_fd>off</close_std_fd>
+        <control_bypass_link>$(control_bypass_link)</control_bypass_link>
+        <log_post_plaintext>on</log_post_plaintext>
+    </main>
+
+    <utrace>
+        <switch>$(utrace_switch)</switch>
+        <header_node>$(utrace_header)</header_node>
+        <agent_ip>$(utrace_agent_ip)</agent_ip>
+        <agent_rpc_port>$(utrace_rpc_port)</agent_rpc_port>
+        <agent_config_port>$(utrace_config_port)</agent_config_port>
+        <app_service>$(utrace_app_service)</app_service>
+        <sample_ratio>$(utrace_sample_ratio)</sample_ratio>
+        <service_map>app=a4-agg-web&amp;host=quark.sm.cn:umon-trace-example-C;app=a4-agg-web&amp;host=so.m.sm.cn:umon-trace-example-C;app=a4-agg-web&amp;host=test-quark.sm.cn:umon-trace-example-C;app=a4-agg-web&amp;host=test.m.sm.cn:umon-trace-example-C</service_map>
+        <trace_service>$(utrace_trace_service)</trace_service>
+    </utrace>
+
+    <threadpools>
+        <threadpool name="interleaving_thread_pool">
+            <thread_count>$(thread_count_interleaving)</thread_count>
+            <task_queue_count>1000</task_queue_count>
+        </threadpool>
+        <threadpool name="subcontext_thread_pool">
+            <thread_count>300</thread_count>
+            <task_queue_count>500</task_queue_count>
+        </threadpool>
+    </threadpools>
+
+    <plugin>
+        <modules dlclose="on">
+            <module name="a4_ns_plugin" path="$(AINST__INSTALLROOT)/lib64/liba4_ns_plugin.so">
+                <params>
+                    <zk_spec>$(cm_zk_spec)</zk_spec>
+                    <zk_path>$(cm_zk_path)</zk_path>
+                    <timeout>$(cm_zk_timeout)</timeout>
+                    <sub_type>st_part</sub_type>
+                    <compress_type>ct_snappy</compress_type>
+                    <sub_cluster_general_llm>$(general_llm)</sub_cluster_general_llm>
+                    <sub_cluster_gaokao_llm_service>$(gaokao_llm_service)</sub_cluster_gaokao_llm_service>
+                    <sub_cluster_qt_model>$(qt_model)</sub_cluster_qt_model>
+                    <sub_cluster_risk_model>$(risk_model)</sub_cluster_risk_model>
+                    <sub_cluster_intent_model>$(intent_model)</sub_cluster_intent_model>
+                    <sub_cluster_gaokao_intent_service>$(gaokao_intent_service)</sub_cluster_gaokao_intent_service>
+                    <sub_cluster_ae_model>$(ae_model)</sub_cluster_ae_model>
+                    <sub_cluster_qd_correlation_model>$(qd_correlation_model)</sub_cluster_qd_correlation_model>
+                    <sub_cluster_knowledge_server>$(knowledge_server)</sub_cluster_knowledge_server>
+                    <sub_cluster_news_server>$(news_server)</sub_cluster_news_server>
+                    <sub_cluster_knowledge_grade_model>$(knowledge_grade_model)</sub_cluster_knowledge_grade_model>
+                    <sub_cluster_prompt_tokenizer_server>$(prompt_tokenizer_server)</sub_cluster_prompt_tokenizer_server>
+                    <sub_cluster_aigc_index>$(aigc_index)</sub_cluster_aigc_index>
+                    <sub_cluster_gaokao_index>$(gaokao_index)</sub_cluster_gaokao_index>
+                    <sub_cluster_mainindex>$(ha3_mainindex)</sub_cluster_mainindex>
+                    <sub_cluster_mainindex_summary>$(s3_mainindex)</sub_cluster_mainindex_summary>
+                    <!-- sub_cluster_qtc_node>qtc-v412-ipu</sub_cluster_qtc_node -->
+                    <sub_cluster_qtc_node>sgs-gaokao-qtc-v412</sub_cluster_qtc_node>
+                    <sub_cluster_pr_node>jxwd-kse-3090</sub_cluster_pr_node>
+                    <sub_cluster_qlog_index>$(qlog_index)</sub_cluster_qlog_index>
+                    <sub_cluster_xueshu_index>$(xueshu_index)</sub_cluster_xueshu_index>
+                    <sub_cluster_sgs_index>$(sgs_index)</sub_cluster_sgs_index>
+                    <sub_cluster_qp>$(qp)</sub_cluster_qp>
+                    <sub_cluster_academic_note_index>$(academic_note_index)</sub_cluster_academic_note_index>
+                    <sub_cluster_llm_emb_model>$(llm_emb_model)</sub_cluster_llm_emb_model>
+                    <sub_cluster_llm_emb_model_l3>$(llm_emb_model_l3)</sub_cluster_llm_emb_model_l3>
+                    <sub_cluster_llm_recall_model>$(llm_recall_model)</sub_cluster_llm_recall_model>
+                    <sub_cluster_ha3_feature>$(ha3_feature)</sub_cluster_ha3_feature>
+                    <sub_cluster_llm_note_eve_model>$(llm_note_eve_model)</sub_cluster_llm_note_eve_model>
+                    
+                </params>
+            </module>
+            <module name="agg_web2_module" path="$(AINST__INSTALLROOT)/lib64/liba4_agg_web2.so">
+                <params>
+                    <data_collector>sc_template_data:sc_template_data,rewrite_query_pool_data:rewrite_query_pool_data,query_rewrite_data:query_rewrite_data,offline_sc_filter_data:offline_sc_filter_data,source_bodyclean_data:source_bodyclean_data,query_filter_data:query_filter_data,host_filter_data:host_filter_data,query_makeup_data:query_makeup_data,college_authority_data:college_authority_data,zxf_view_data:zxf_view_data</data_collector>
+                    <sys_monitor_switch>$(sys_monitor_switch)</sys_monitor_switch>
+                    <sys_monitor_maxmem>$(sys_monitor_maxmem)</sys_monitor_maxmem>
+                    <sys_monitor_time_interval_ms>$(sys_monitor_time_interval_ms)</sys_monitor_time_interval_ms>
+                    <query_url_pk_file></query_url_pk_file>
+                    <domain_suffix_file_path>$(AINST__INSTALLROOT)/conf/a4_agg_quarkchat/domain_suffix.conf</domain_suffix_file_path>
+                    <mix_dump>0</mix_dump>
+                    <online_dump>0</online_dump>
+                    <l3_dump>0</l3_dump>
+                    <local_ip>$(local_ip)</local_ip>
+                    <host_config_datas>multi_site,news_site,adult_site,bbs_site,mobile_friendly_site</host_config_datas>
+                    <config_collector>
+                        sc_config:sc_config,intention_template_config:intention_template_config,timeliness_config:timeliness_config,online_dedup_config:multi_online_dedup_config,adjuster_config:adjuster_config
+                    </config_collector>
+                </params>
+            </module>
+
+            <!-- agg_web1 module -->
+            <!--include_xml type="modules">$(AINST__INSTALLROOT)/conf/a4_agg_quarkchat/agg_web1/modules.xml</include_xml-->
+        </modules>
+
+        <processors>
+            <!-- debug -->
+            <processor name="__buildin_debug_processor" module_name="agg_web2_module" class_name="__buildin_debug_processor">
+                <params>
+                    <debug_processor_file_serving_root>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</debug_processor_file_serving_root>
+                    <debug_processor_package_dir>$(AINST__INSTALLROOT)/var/ainst/packages/</debug_processor_package_dir>
+                </params>
+            </processor>
+            <!-- control -->
+            <processor name="ns_ip_limit_processor" module_name="a4_ns_plugin" class_name="NsIpLimitProcessor">
+                <params>
+                    <access_ctl_data>acl_data</access_ctl_data>
+                </params>
+            </processor>
+            <processor name="conn_limit_processor" module_name="agg_web2_module" class_name="ConnLimitProcessor">
+                <params>
+                    <max_conns>500</max_conns>
+                </params>
+            </processor>
+            <processor name="request_limit_processor" module_name="" class_name="RequestLimitProcessor">
+                <params>
+                    <max_qps>500</max_qps>
+                </params>
+            </processor>
+            <processor name="file_processor" module_name="" class_name="FileProcessor">
+                <params>
+                    <file_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data</file_dir>
+                </params>
+            </processor>
+            <processor name="medchat_parse_processor" module_name="agg_web2_module" class_name="MedChatParseProcessor">
+                <params>
+                    <bts_group>$(bts_group_switch)</bts_group>
+                    <extra_param_file>$(AINST__INSTALLROOT)/conf/a4_agg_quarkchat/$(deploy_env)/extra_agg_param.json</extra_param_file>
+                </params>
+            </processor>
+            <processor name="medchat_cache_processor" module_name="agg_web2_module" class_name="MedChatCacheProcessor">
+                <params>
+                        <session_tair_node>session_tair</session_tair_node>
+                        <llm_max_history_size>$(llm_max_history_size)</llm_max_history_size>
+                </params>
+            </processor>
+            <processor name="latency_log_processor" module_name="agg_web2_module" class_name="LatencyLogProcessor">
+                <params>
+                    <sampling_rate>5</sampling_rate>
+                </params>
+            </processor>
+            <processor name="latency_calculate_processor" module_name="agg_web2_module" class_name="LatencyCalculateProcessor">
+                <params>
+                    <session_latency_cache_hit_key>session_latency_cache_hit_in_default</session_latency_cache_hit_key>
+                    <session_latency_cache_miss_key>session_latency_cache_miss_in_default</session_latency_cache_miss_key>
+                    <session_latency_key>session_latency_in_default</session_latency_key>
+                </params>
+            </processor>
+            <processor name="general_llm_processor" module_name="agg_web2_module" class_name="GeneralLLMProcessor">
+                <params>
+                    <general_llm_sync_server>$(general_llm_sync_node)</general_llm_sync_server>
+                    <query_intent_llm_name_new>$(query_intent_llm_model_new)</query_intent_llm_name_new>
+                    <rewrite_llm_name>$(rewrite_llm_model)</rewrite_llm_name>
+                    <rewrite_llm_name_new>$(rewrite_llm_model_new)</rewrite_llm_name_new>
+                    <single_rewrite_llm_name>$(single_rewrite_llm_name)</single_rewrite_llm_name>
+                    <answer_locate_llm_name>$(answer_locate_llm_name)</answer_locate_llm_name>
+                    <ai_vendor>$(ai_vendor)</ai_vendor>
+                    <llm_api_key>$(llm_api_key)</llm_api_key>
+                    <session_tair_node>session_tair</session_tair_node>
+                    <agg_host>$(agg_web_server)</agg_host>
+                    <qt_model>qt_model/ts</qt_model>
+                </params>
+            </processor>
+            <processor name="wenchuang_search_processor" module_name="agg_web2_module" class_name="WenChuangSearchProcessor">
+                <params>
+                    <!-- 继承关系，参数保持和general_llm_processor一致 -->
+                    <general_llm_sync_server>$(general_llm_sync_node)</general_llm_sync_server>
+                    <query_intent_llm_name_new>$(query_intent_llm_model_new)</query_intent_llm_name_new>
+                    <rewrite_llm_name>$(rewrite_llm_model)</rewrite_llm_name>
+                    <rewrite_llm_name_new>$(rewrite_llm_model_new)</rewrite_llm_name_new>
+                    <single_rewrite_llm_name>$(single_rewrite_llm_name)</single_rewrite_llm_name>
+                    <answer_locate_llm_name>$(answer_locate_llm_name)</answer_locate_llm_name>
+                    <ai_vendor>$(ai_vendor)</ai_vendor>
+                    <llm_api_key>$(llm_api_key)</llm_api_key>
+                    <session_tair_node>session_tair</session_tair_node>
+                    <agg_host>$(agg_web_server)</agg_host>
+                    <qt_model>qt_model/ts</qt_model>
+                </params>
+            </processor>
+            <processor name="gaokao_search_processor" module_name="agg_web2_module" class_name="GaoKaoSearchProcessor">
+                <params>
+                    <!-- 继承关系，参数保持和general_llm_processor一致 -->
+                    <general_llm_sync_server>$(general_llm_sync_node)</general_llm_sync_server>
+                    <query_intent_llm_name_new>$(query_intent_llm_model_new)</query_intent_llm_name_new>
+                    <rewrite_llm_name>$(rewrite_llm_model)</rewrite_llm_name>
+                    <rewrite_llm_name_new>$(rewrite_llm_model_new)</rewrite_llm_name_new>
+                    <single_rewrite_llm_name>$(single_rewrite_llm_name)</single_rewrite_llm_name>
+                    <answer_locate_llm_name>$(answer_locate_llm_name)</answer_locate_llm_name>
+                    <ai_vendor>$(ai_vendor)</ai_vendor>
+                    <llm_api_key>$(llm_api_key)</llm_api_key>
+                    <session_tair_node>session_tair</session_tair_node>
+                    <agg_host>$(agg_web_server)</agg_host>
+                    <qt_model>qt_model/ts</qt_model>
+                </params>
+            </processor>
+            <processor name="trigger_processor" module_name="agg_web2_module" class_name="TriggerProcessor">
+                <params>
+                </params>
+            </processor>
+            <processor name="recall_web_agg_processor" module_name="agg_web2_module" class_name="RecallWebAggProcessor">
+                <params>
+                    <agg_host>$(agg_web_server)</agg_host>
+                </params>
+            </processor>
+            <processor name="recall_index_processor" module_name="agg_web2_module" class_name="RecallIndexProcessor">
+                <params>
+                    <channels_clusters>aigc_index:web_small_index:qa_good;mainindex:web_small_index:vip,galaxy;gaokao_index:web_small_index:sgs-gaokao</channels_clusters>
+                    <attribute>NormalizedUrl,V_TIME</attribute>
+                    <rule>phase1_node:aigc_index,phase2_node:aigc_index,phase2_type:ha3,profile:DefaultProfile;phase1_node:mainindex,phase2_node:mainindex_summary,phase2_type:s3,profile:MainBodyProfile,keep_range_id:no,key_type:RAW_PK;phase1_node:gaokao_index,phase2_node:gaokao_index,phase2_type:ha3,profile:DefaultProfile</rule>
+                </params>
+            </processor>
+            <processor name="rank_processor" module_name="agg_web2_module" class_name="RankProcessor">
+                <params>
+                    <pr_node>kse_node/pr_12L_v103?_chain=pr_12L_v103</pr_node>
+                    <qtc_bert_node>qtc_node/batch</qtc_bert_node>
+                    <general_llm_sync_server>$(general_llm_sync_node)</general_llm_sync_server>
+                    <answer_locate_llm_name>$(answer_locate_llm_name)</answer_locate_llm_name>
+                    <llm_api_key>$(llm_api_key)</llm_api_key>
+                </params>
+            </processor>
+            <processor name="llm_processor" module_name="agg_web2_module" class_name="LLMProcessor">
+                <params>
+                </params>
+            </processor>
+            <processor name="qlog_request_qp_processor" module_name="agg_web2_module" class_name="RequestQpProcessor">
+                <params>
+                    <qp_node>qp/web</qp_node>
+                    <channels_clusters>qlog_index:web_small_index:vip</channels_clusters>
+                    <kv_item>fr:xxx,ip:0.0.0.0,st:wap,tl:54,sl:100,adult_demote:255,sp:on,mode:xxx,or_logic:v2</kv_item>
+                    <config_item>start:0,hit:200,navigationalQuery:on,filtermode:11</config_item>
+                </params>
+            </processor>
+            <processor name="qlog_request_index_processor" module_name="agg_web2_module" class_name="RequestIndexProcessor">
+                <params>
+                    <!--common>config=format:protobuf,no_summary:no,proto_format_option:pb_matchdoc_format,timeout:1000,result_compress:snappy</common-->
+                    <common>config=format:protobuf,no_summary:no,timeout:1000,result_compress:snappy</common>
+                    <qlog_index>
+                        config=searcher_return_hits:50,hit:50,start:0#rank=rank_profile:DefaultProfile
+                    </qlog_index>
+                </params>
+            </processor>
+            <processor name="qlog_rerank_processor" module_name="agg_web2_module" class_name="QlogRerankProcessor">
+                <params>
+                    <qt_model>qt_model/ts</qt_model>
+                </params>
+            </processor>
+            <processor name="mount_trigger_processor" module_name="agg_web2_module" class_name="MountTriggerProcessor">
+                <params>
+                </params>
+            </processor>
+            <processor name="sgs_request_qp_processor" module_name="agg_web2_module" class_name="RequestQpProcessor">
+                <params>
+                    <qp_node>qp/web</qp_node>
+                    <channels_clusters>sgs_index:web_small_index:vip</channels_clusters>
+                    <kv_item>fr:xxx,ip:0.0.0.0,st:wap,tl:54,sl:100,adult_demote:255,sp:on,mode:xxx,or_logic:v2</kv_item>
+                    <config_item>start:0,hit:200,navigationalQuery:on,filtermode:11</config_item>
+                </params>
+            </processor>
+            <processor name="sgs_request_index_processor" module_name="agg_web2_module" class_name="RequestIndexProcessor">
+                <params>
+                    <common>config=format:protobuf,no_summary:no,timeout:1000,result_compress:snappy</common>
+                    <sgs_index>
+                        config=searcher_return_hits:50,hit:50,start:0#rank=rank_profile:DefaultProfile
+                    </sgs_index>
+                </params>
+            </processor>
+            <processor name="sgs_rerank_processor" module_name="agg_web2_module" class_name="SgsRerankProcessor">
+                <params>
+                    <qt_model>qt_model/ts</qt_model>
+                </params>
+            </processor>
+            <processor name="xueshu_request_qp_processor" module_name="agg_web2_module" class_name="RequestQpProcessor">
+                <params>
+                    <qp_node>qp/web</qp_node>
+                    <channels_clusters>xueshu_index:web_small_index:vip;academic_note_index:web_small_index:vip</channels_clusters>
+                    <kv_item>fr:xxx,ip:0.0.0.0,st:wap,tl:54,sl:100,adult_demote:255,sp:on,mode:xxx,or_logic:v2</kv_item>
+                    <config_item>start:0,hit:200,navigationalQuery:on,filtermode:11</config_item>
+                </params>
+            </processor>
+            <processor name="xueshu_request_index_processor" module_name="agg_web2_module" class_name="RequestIndexProcessor">
+                <params>
+                    <common>config=format:protobuf,no_summary:no,timeout:1000,result_compress:snappy</common>
+                    <xueshu_index>
+                        config=searcher_return_hits:10,hit:50,start:0#rank=rank_profile:DefaultProfile
+                    </xueshu_index>
+                    <academic_note_index>
+                        config=searcher_return_hits:10,hit:100,start:0#rank=rank_profile:DefaultProfile
+                    </academic_note_index>
+                </params>
+            </processor>
+            <processor name="academic_recall_processor" module_name="agg_web2_module" class_name="AcademicRecallProcessor">
+                <params>
+                    <query_emb_node>llm_emb_model/process</query_emb_node>
+                    <eve_node>llm_recall_model/proxy?_timeout=10000</eve_node>
+                    <academic_ha3_feature>ha3_feature</academic_ha3_feature>
+                    <eve_note_node>llm_note_eve_model/proxy?_timeout=10000</eve_note_node>
+                    <academic_ha3_note_feature>academic_note_index</academic_ha3_note_feature>
+                </params>
+            </processor>
+            <processor name="xueshu_rank_processor" module_name="agg_web2_module" class_name="XueshuRankProcessor">
+                <params>
+                    <qtc_bert_node>qtc_node/online_new_gpu</qtc_bert_node>
+                </params>
+            </processor>
+        </processors>
+
+        <selectors>
+            <selector name="web_selector" module_name="" class_name="DefaultAppSelector">
+                <params>
+                    <app_name>web</app_name>
+                </params>
+            </selector>
+            <selector name="wenchuang_selector" module_name="" class_name="DefaultAppSelector">
+                <params>
+                    <app_name>wenchuang</app_name>
+                </params>
+            </selector>
+            <selector name="gaokao_selector" module_name="" class_name="DefaultAppSelector">
+                <params>
+                    <app_name>gaokao</app_name>
+                </params>
+            </selector>
+            <selector name="qlog_selector" module_name="" class_name="DefaultAppSelector">
+                <params>
+                    <app_name>qlog</app_name>
+                </params>
+            </selector>
+            <selector name="mount_selector" module_name="" class_name="DefaultAppSelector">
+                <params>
+                    <app_name>mount</app_name>
+                </params>
+            </selector>
+            <selector name="sgs_offline_selector" module_name="" class_name="DefaultAppSelector">
+                <params>
+                    <app_name>sgs_offline</app_name>
+                </params>
+            </selector>
+            <selector name="xueshu_selector" module_name="" class_name="DefaultAppSelector">
+                <params>
+                    <app_name>xueshu</app_name>
+                </params>
+            </selector>
+            <selector name="check_status_selector" module_name="" class_name="DefaultAppSelector">
+                <params>
+                    <app_name>checkstatus</app_name>
+                </params>
+            </selector>
+        </selectors>
+
+        <loaders>
+            <loader name="access_ctl_data_loader" module_name="a4_ns_plugin" class_name="AccessCtlDataLoader">
+                <params></params>
+            </loader>
+            <loader name="sc_template_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>ScTemplateData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+            <loader name="rewrite_query_pool_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>RewriteQueryPoolData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+            <loader name="query_rewrite_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>KeyValueData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+            <loader name="offline_sc_filter_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>KeyValueData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+            <loader name="source_bodyclean_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>KeyValueData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+            <loader name="query_filter_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>ValueData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+            <loader name="host_filter_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>ValueData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+            <loader name="host_authority_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>HostAuthorityData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+            <loader name="query_makeup_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>KeyValueData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+            <loader name="qc_bert_token_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>StringIntData</data_type>
+                    <data_param>type:string</data_param>
+                </params>
+            </loader>
+            <loader name="college_authority_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>KeyValueData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+            <loader name="zxf_view_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>KeyValueData</data_type>
+                    <data_param></data_param>
+                    <data_dir>$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/</data_dir>
+                </params>
+            </loader>
+        </loaders>
+
+        <loadbalances>
+            <loadbalance name="hash_strategy" module_name="" class_name="HashLoadBalanceStrategy"/>
+            <loadbalance name="rr_strategy" module_name="" class_name="RrLoadBalanceStrategy"/>
+            <loadbalance name="ns_rr_strategy" module_name="a4_ns_plugin" class_name="CmRrStrategy"/>
+            <loadbalance name="ns_hash_strategy" module_name="a4_ns_plugin" class_name="CmHashStrategy"/>
+            <loadbalance name="ns_ip_hash_strategy" module_name="a4_ns_plugin" class_name="CmIpHashStrategy"/>
+            <loadbalance name="vipserver_strategy" module_name="a4_ns_plugin" class_name="VipServerStrategy" />
+        </loadbalances>
+
+    </plugin>
+
+    <nodes init_thread_num="16">
+        <node name='general_llm' type='http'>
+            <conn_pool_size>200</conn_pool_size>
+            <timeout>$(general_llm_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(general_llm)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="session_tair" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>$(session_tair_effective_time)</effective_time>
+            <port>$(session_tair_port)</port>
+            <group>$(session_tair_group)</group>
+            <area>$(session_tair_area)</area>
+            <master>$(session_tair_master)</master>
+            <slave>$(session_tair_slave)</slave>
+            <log_path>$(AINST__INSTALLROOT)/logs/a4_agg_quarkchat/session_tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+        <node name="agg_web_server" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(agg_web_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="rr_strategy">
+                    <params>
+                    </params>
+                </lb_strategy>
+                <specs>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(agg_web_server)</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(agg_web_server)</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(agg_web_server)</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(agg_web_server)</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(agg_web_server)</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(agg_web_server)</spec>
+                </specs>
+            </upstream>
+        </node>
+        <node name="sgs_pr_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>1000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="rr_strategy">
+                    <params>
+                    </params>
+                </lb_strategy>
+                <specs>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">sgs-gaokao-pr-request.zeus.vipserver:32288</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">sgs-gaokao-pr-request.zeus.vipserver:32288</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">sgs-gaokao-pr-request.zeus.vipserver:32288</spec>
+                </specs>
+            </upstream>
+        </node>
+        <node name="llm_pr_model" type="http">
+            <conn_pool_size>2000</conn_pool_size>
+            <timeout>3000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="vipserver_strategy">
+                    <params>
+                        <domain>$(llm_pr_model)</domain>
+                        <cluster></cluster>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="llm_minicpm_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="rr_strategy">
+                    <params>
+                    </params>
+                </lb_strategy>
+                <specs>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">11066.vpf.vipserver:53549</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">11066.vpf.vipserver:53549</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">11066.vpf.vipserver:53549</spec>
+                </specs>
+            </upstream>
+        </node>
+        <node name="llm_emb_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(llm_emb_model)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="llm_emb_model_l3" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(llm_emb_model_l3)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="llm_recall_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(llm_recall_model)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="llm_note_eve_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(llm_note_eve_model)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="llm_rank_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="rr_strategy">
+                    <params>
+                    </params>
+                </lb_strategy>
+                <specs>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">minicpm-pr-request.zeus.vipserver:36431</spec>
+                </specs>
+            </upstream>
+        </node>
+        <!-- <node name="ha3_feature" type="http">
+            <conn_pool_size>2000</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_feature)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>  -->
+        <node name="ha3_feature" type="http">
+            <conn_pool_size>2000</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="rr_strategy">
+                    <params>
+                    </params>
+                </lb_strategy>
+                <specs>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">33.74.113.132:5928</spec>
+                </specs>
+            </upstream>
+        </node>
+        <node name="academic_note_index" type="http">
+            <conn_pool_size>2000</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(academic_note_index)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name='gaokao_llm_service' type='http'>
+            <conn_pool_size>200</conn_pool_size>
+            <timeout>1000000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(gaokao_llm_service)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="qt_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qt_model_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(qt_model)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="intent_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(intent_model_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(intent_model)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="gaokao_intent_service" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>200</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(gaokao_intent_service)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="ae_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(ae_model_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(ae_model)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="qd_correlation_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qd_correlation_model_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(qd_correlation_model)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="knowledge_server" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(knowledge_server_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(knowledge_server)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="news_server" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(news_server_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(news_server)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="knowledge_grade_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(knowledge_grade_model_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(knowledge_grade_model)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="aigc_index" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(aigc_index)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="gaokao_index" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(gaokao_index)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="mainindex" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(ha3_mainindex)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="mainindex_summary" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>10000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(s3_mainindex)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="qtc_node" type="http">
+            <conn_pool_size>500</conn_pool_size>
+            <timeout>2000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <!-- name>qtc-v412-ipu</name -->
+                    <name>sgs-gaokao-qtc-v412</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="kse_node" type="http">
+            <conn_pool_size>500</conn_pool_size>
+            <timeout>200</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>jxwd-kse-3090</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="qlog_index" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>1000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(qlog_index)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+            <!-- upstream>
+                <lb_strategy name="rr_strategy">
+                    <params>
+                    </params>
+                </lb_strategy>
+                <specs>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">11.251.178.18:6698</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">11.251.178.18:6698</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">11.251.178.18:6698</spec>
+                </specs>
+            </upstream -->
+        </node>
+        <node name="sgs_index" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>1000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(sgs_index)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <!-- <node name="xueshu_index" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>1000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(xueshu_index)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node> -->
+        <node name="xueshu_index" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>1000</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="rr_strategy">
+                    <params>
+                    </params>
+                </lb_strategy>
+                <specs>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">33.74.120.233:9348</spec>
+                </specs>
+            </upstream>
+        </node>
+        <node name="qp" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qp_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(qp)</name>
+                        <interval>1000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+    </nodes>
+
+
+    <datas init_thread_num="16">
+        <data name="acl_data" path="$(ip_limit_rule)" loader="access_ctl_data_loader" update_interval="5000"/>
+        <data name="sc_template_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_62397f789c55505c7d68d10555390293c50a.json" loader="sc_template_data_loader" update_interval="50000"/>
+        <data name="rewrite_query_pool_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_62857a91688d01a1bcba9ab89b933d2dca68.json" loader="rewrite_query_pool_data_loader" update_interval="50000"/>
+        <data name="query_rewrite_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_6286607b00d8542f922c53dd9597baa6d153.json" loader="query_rewrite_data_loader" update_interval="50000"/>
+        <data name="offline_sc_filter_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_63065fed4cdc798dec247f11b9a5eb35a08b.json" loader="offline_sc_filter_data_loader" update_interval="50000"/>
+        <data name="source_bodyclean_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_630743bc95c9b7bc65d9d483c979910fe9bb.json" loader="source_bodyclean_data_loader" update_interval="50000"/>
+        <data name="query_filter_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_609510af0fad9808e9e5886c763489d2e163.data" loader="query_filter_data_loader" update_interval="50000"/>
+        <data name="host_filter_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_6472c6c0a5ed07dd8632f3c279dd154c3938.data" loader="host_filter_data_loader" update_interval="50000"/>
+        <data name="host_authority_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_647677f7702b60aa65e0bdb41e43fa7f4973.data" loader="host_authority_data_loader" update_interval="50000"/>
+        <data name="query_makeup_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_65837fba4348a55928632022e854d159b79f.json" loader="query_makeup_data_loader" update_interval="50000"/>
+        <data name="wenchuang_filter_host_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_69034f9f1557d42a39e53e24bb5109ee87f8.data" loader="host_filter_data_loader" update_interval="50000"/>
+        <data name="wenchuang_good_host_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_69048a841cede8ce3f8c43694b9416048878.data" loader="host_filter_data_loader" update_interval="50000"/>
+        <data name="gaokao_filter_host_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_7144eeea5c8fefa88deb772559bef4b8d354.data" loader="host_filter_data_loader" update_interval="50000"/>
+        <data name="gaokao_good_host_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_714347d138744f847d4bab2d0bd4c6a43669.data" loader="host_filter_data_loader" update_interval="50000"/>
+        <data name="qc_bert_token" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/bert_word_map" loader="qc_bert_token_loader" update_interval="0"/>
+        <data name="college_authority_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_7292a282b80f232c8e2cbb8ebccb407a0af9.json" loader="college_authority_data_loader" update_interval="50000"/>
+        <data name="zxf_view_data" path="$(AINST__INSTALLROOT)/var/a4_agg_quarkchat/data/application_75576fb0e21395e5a9343113d8c6a8a4b115.json" loader="zxf_view_data_loader" update_interval="50000"/>
+    </datas>
+
+    <apps>
+        <app name="web">
+            <phase name="access-limit">
+                <processor name="ns_ip_limit_processor" method="" desc="访问控制"/>
+                <processor name="conn_limit_processor" method="" desc="流量连接控制"/>
+                <processor name="request_limit_processor" method="" desc="流量QPS控制"/>
+            </phase>
+            <phase name="1">
+                <processor name="medchat_parse_processor" method=""/>
+                <processor name="medchat_cache_processor" method="read_llm_cache"/>
+            </phase>
+            <phase name="2">
+                <processor name="general_llm_processor" method="request_agg" desc="请求大搜AGG"/>
+            </phase>
+            <phase name="output">
+                <processor name="latency_log_processor" method=""/>
+                <processor name="latency_calculate_processor" method="" desc="latency指标统计"/>
+            </phase>
+        </app>
+        <app name="wenchuang">
+            <phase name="access-limit">
+                <processor name="ns_ip_limit_processor" method="" desc="访问控制"/>
+                <processor name="conn_limit_processor" method="" desc="流量连接控制"/>
+                <processor name="request_limit_processor" method="" desc="流量QPS控制"/>
+            </phase>
+            <phase name="1">
+                <processor name="medchat_parse_processor" method=""/>
+            </phase>
+            <phase name="2">
+                <processor name="wenchuang_search_processor" method="" desc="请求大搜AGG"/>
+            </phase>
+        </app>
+        <app name="gaokao">
+            <phase name="access-limit">
+                <processor name="ns_ip_limit_processor" method="" desc="访问控制"/>
+                <processor name="conn_limit_processor" method="" desc="流量连接控制"/>
+                <processor name="request_limit_processor" method="" desc="流量QPS控制"/>
+            </phase>
+            <phase name="1">
+                <processor name="medchat_parse_processor" method=""/>
+            </phase>
+            <phase name="2">
+                <processor name="trigger_processor" method="" desc="Query触发模型"/>
+                <processor name="recall_web_agg_processor" method="" desc="请求大搜Agg"/>
+                <processor name="recall_index_processor" method="" desc="请求自建索引库结果"/>
+                <processor name="rank_processor" method="" desc="排序"/>
+            </phase>
+            <phase name="3">
+                <processor name="llm_processor" method=""/>
+            </phase>
+        </app>
+        <app name="qlog">
+            <phase name="1">
+                <processor name="medchat_parse_processor" method=""/>
+            </phase>
+            <phase name="2">
+                <processor name="qlog_request_qp_processor" method=""/>
+                <processor name="qlog_request_index_processor" method="gen_qrs_clause"/>
+                <processor name="qlog_request_index_processor" method="request_index"/>
+                <processor name="qlog_rerank_processor" method=""/>
+            </phase>
+        </app>
+        <app name="mount">
+            <phase name="1">
+                <processor name="medchat_parse_processor" method=""/>
+            </phase>
+            <phase name="2">
+                <processor name="mount_trigger_processor" method=""/>
+            </phase>
+        </app>
+        <app name="sgs_offline">
+            <phase name="1">
+                <processor name="medchat_parse_processor" method=""/>
+            </phase>
+            <phase name="2">
+                <processor name="sgs_request_qp_processor" method=""/>
+                <processor name="sgs_request_index_processor" method="gen_qrs_clause"/>
+                <processor name="sgs_request_index_processor" method="request_index"/>
+                <processor name="sgs_rerank_processor" method=""/>
+            </phase>
+        </app>
+        <app name="xueshu">
+            <phase name="1">
+                <processor name="medchat_parse_processor" method=""/>
+            </phase>
+            <phase name="2">
+                <processor name="xueshu_request_qp_processor" method=""/>
+                <processor name="academic_recall_processor" method="get_query_emb"/>
+                <processor name="xueshu_request_index_processor" method="gen_qrs_clause"/>
+                <processor name="xueshu_request_index_processor" method="request_index"/>
+                <processor name="academic_recall_processor" method="get_body"/>
+                <processor name="academic_recall_processor" method="get_summary"/>
+                <processor name="xueshu_rank_processor" method=""/>
+            </phase>
+        </app>
+        <!-- service相关的app-chain -->
+        <app name="checkstatus">
+            <phase name="1">
+                <processor name="request_limit_processor"/>
+                <processor name="file_processor"/>
+            </phase>
+        </app>
+    </apps>
+
+    <locations>
+        <location name="/web" selector="web_selector"/>
+        <location name="/wenchuang" selector="wenchuang_selector"/>
+        <location name="/gaokao" selector="gaokao_selector"/>
+        <location name="/qlog" selector="qlog_selector"/>
+        <location name="/mount" selector="mount_selector"/>
+        <location name="/sgs_offline" selector="sgs_offline_selector"/>
+        <location name="/xueshu" selector="xueshu_selector"/>
+        <location name="/status" selector="check_status_selector"/>
+        <location name="*" selector="check_status_selector"/>
+    </locations>
+</A4>
+

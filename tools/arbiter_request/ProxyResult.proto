@@ -1,0 +1,15 @@
+package zeus.BatchRequestProxy;
+
+message AppResult {
+    optional string appName = 1;
+    optional bytes resultStr = 2;
+}
+
+message ProxyResult
+{
+    repeated AppResult appResult = 1;    //每个正常返回的应用的结果
+    repeated bytes unknownAppNames = 2;  //不认识的APP名字
+    repeated bytes errorAppNames = 3;    //http code不是200，也不是400, 也不是超时的应用
+    repeated bytes timeoutAppNames = 4;  //请求超时，connection refuse的应用
+    optional bytes appTraceInfo = 5;  //trace指定app
+}

@@ -1,0 +1,526 @@
+#include <agg_web2/biz/debug/simple_rank_processor.h>
+#include "agg_web2/common/common.h"
+#include <agg2/wrapper/agg_http_wrapper.h>
+#include <agg2/helper/agg_context_helper.h>
+#include <agg_web2/helper/agg_web_context_helper.h>
+#include <jsoncpp/json/json.h>
+#include <agg_web2/data/value_data.h>
+#include <agg_web2/upstream/qt/qt_request.h>
+#include <agg_web2/upstream/qt/qt_result.h>
+#include <agg_web2/upstream/common/common_request.h>
+#include <agg_web2/upstream/common/common_result.h>
+#include <agg2/util/string_tool.h>
+#include <agg_web2/data/key_value_data.h>
+
+/*#include <agg_web2/upstream/qc/qc_feature_result.h>
+#include <agg_web2/util/QtcExtractor.h>
+#include <agg_web2/data/data_type.h>
+#include <agg2/wrapper/agg_data_wrapper.h>
+#include <autil/StringUtil.h>
+#include <A4/util/hash_algorithm.h>
+#include <agg_web2/helper/general_search_helper.h>
+#include <agg_web2/util/string_deduper.h>
+#include <agg2/helper/time_helper.h>
+#include <agg_web2/upstream/qdoc_correlation/qd_request.h>
+#include <agg_web2/upstream/qdoc_correlation/qd_result.h>*/
+//#include <agg2/upstream/llm_result.h>
+//#include <agg2/upstream/llm_request.h>
+
+AGG_BEGIN_NAMESPACE(agg_web2);
+AGG_LOG_SETUP(agg_web2, SimpleRankProcessor);
+
+BEGIN_DEFINE_SERIALIZATION_FUNC(SimpleRankProcessor)
+    // Example: serialize mField
+    // ar & BOOST_SERIALIZATION_NVP(mField);
+END_DEFINE_SERIALIZATION_FUNC(SimpleRankProcessor)
+
+//const std::string QTC_NODE_PARAM_KEY = "qtc_bert_node";
+
+SimpleRankProcessor::SimpleRankProcessor()
+{
+}
+
+SimpleRankProcessor::~SimpleRankProcessor()
+{
+}
+
+bool SimpleRankProcessor::DoInit(const String2String & params)
+{
+    //PARSE_PROCESSOR_PARAM(params, QTC_NODE_PARAM_KEY, mQTCNode);
+    AGG_LOG(ERROR, "DO Init Succ.");
+    return true;
+}
+
+void SimpleRankProcessor::DoRegisterMetric(AmonitorRegister * monitorRegister)
+{
+}
+
+int SimpleRankProcessor::DoProcess(AggContext * aggContext)
+{
+    AGG_LOG(ERROR, "debug xxxx");
+    if (aggContext == NULL)
+        return 0;
+
+    AGG_LOG(ERROR, "debug 0");
+    int64_t start_time = autil::TimeUtility::currentTimeInMicroSeconds();
+    int64_t end_time = start_time;
+
+    std::string query, title, body;
+    mAggContext->GetRequestParam("query", query);
+    mAggContext->GetRequestParam("title", title);
+    mAggContext->GetRequestParam("body", body);
+    
+    AGG_LOG(ERROR, "debug 1");
+    std::vector<LLMDocPtr> hitQueueAgg;
+    hitQueueAgg.emplace_back(new LLMDoc(title, body, "", 0, 0.0, 0.0, 0.0,
+        0, false, "", ""));
+    AGG_LOG(ERROR, "debug 2");
+
+    //GetAggResult(hitQueueAgg);
+
+    //RequestAnswerLocateModel(hitQueueAgg, 10);
+
+    vector<string> titles;
+    if (!title.empty())
+        titles.push_back(title);
+
+    // 请求QT服务
+    vector<double> qts = GetQtScores(aggContext, query, titles);
+    AGG_LOG(ERROR, "debug 3");
+
+    stringstream oss;
+    oss << "qts:" << autil::StringUtil::toString(qts, ",");
+
+    FormatEmptyResult(oss.str());
+
+    AGG_LOG(ERROR, "debug 4");
+    end_time = autil::TimeUtility::currentTimeInMicroSeconds();
+    AGG_LOG(INFO, "ReRank Cost:%d", end_time - start_time);
+    return PR_SUCCESS;
+}
+
+// 有效返回结果
+void SimpleRankProcessor::FormatValidResult(const std::string rawQuery, const std::string matchQuery, const std::string matchView, const double qt_score, const std::string message)
+{
+    Json::Value root;
+    Json::Value search_doc = Json::Value(Json::arrayValue);
+
+    search_doc.append(Json::Value());
+    Json::Value & item = search_doc[search_doc.size() - 1];
+    item["content"] = matchView;
+    item["matchQuery"] = matchQuery;
+    item["score"] = qt_score;
+    root["search_doc"] = search_doc;
+    root["query"] = rawQuery;
+    root["message"] = message;
+
+    Json::FastWriter writer;
+    std::string resContent = writer.write(root);
+
+    AGG_LOG(INFO, "resContent=%s", resContent.c_str());
+    mContext->SetResponsePacket(HttpPacketFactory::CreateResponse(200, resContent, String2String()));
+}
+
+// 空结果返回
+void SimpleRankProcessor::FormatEmptyResult(const std::string message)
+{
+    Json::Value root;
+    Json::Value search_doc = Json::Value(Json::arrayValue);
+    root["search_doc"] = search_doc;
+
+    std::string rawQuery;
+    mAggContext->GetRequestParam("query", rawQuery);
+    if (!rawQuery.empty())
+        rawQuery = StringTool::ReplaceStr(rawQuery, "\n", "");
+    root["query"] = rawQuery;
+    root["message"] = message;
+
+    Json::FastWriter writer;
+    std::string resContent = writer.write(root);
+    AGG_LOG(INFO, "resContent=%s", resContent.c_str());
+    mContext->SetResponsePacket(HttpPacketFactory::CreateResponse(200, resContent, String2String()));
+}
+
+// 请求QT服务
+std::vector<double> SimpleRankProcessor::GetQtScores(AggContext* aggContext, const std::string& query,
+        const std::vector<std::string>& titles)
+{
+    HttpRequestPtr httpRequest(new QtRequest(query, titles));
+    AggHttpWrapperPtr wrapper = GetHttpWrapper(aggContext, "qt_model/ts");
+    ResultPtr result(new QtResult);
+    if (! wrapper->SyncRequest(httpRequest, result) || ! result) {
+        AGG_LOG(ERROR, "GetSimQuery qt failed");
+        vector<double> empty;
+        return empty;
+    }
+    QtResultPtr qtResult = std::dynamic_pointer_cast<QtResult>(result);
+    return qtResult->mQtScores;
+}
+/*
+bool SimpleRankProcessor::GetAggResult(std::vector<LLMDocPtr>& hitQueueAgg)
+{
+    //mAggContext->GetValue("RAWQUERY_WEB_AGG_RESULT", hitQueueAgg);
+    //AGG_LOG(DEBUG, "AGG start recall size=%d", hitQueueAgg.size());
+
+    // DeDuplicate(hitQueueAgg, 0.99);
+
+    std::string Source = "AGG";
+    GetRerankResult(hitQueueAgg, Source);
+    //mAggContext->SetValue(HIT_QUEUE_AGG, hitQueueAgg);
+    //AGG_LOG(DEBUG, "AGG recall size=%d", hitQueueAgg.size());
+
+    return true;
+}
+
+void SimpleRankProcessor::GetRerankResult(std::vector<LLMDocPtr>& docPtrVec, std::string& Source)
+{
+    SplitDoc2Psg(docPtrVec);
+    AGG_LOG(ERROR, "rerank recall size=%d", docPtrVec.size());
+
+    GetScores(docPtrVec);
+    AGG_LOG(ERROR, "rerank recall size=%d", docPtrVec.size());
+    
+    //mAggContext->SetValue("RAWDATA_" + Source, docPtrVec);
+
+    SelectDocs(docPtrVec, Source);
+    AGG_LOG(ERROR, "rerank recall size=%d", docPtrVec.size());
+}
+
+void SimpleRankProcessor::SplitDoc2Psg(std::vector<LLMDocPtr>& LLMDocPtrQueue)
+{
+    size_t sampleId = 0;
+    for (auto& LLMDocPtr : LLMDocPtrQueue) {
+        LLMDocPtr->mBodyLines = autil::StringUtil::split(LLMDocPtr->mBody, "\n");
+        size_t idx = 0;
+        size_t num = 0;
+        while (idx < LLMDocPtr->mBodyLines.size()) {
+            ++ num;
+            string psg;
+            size_t next = LLMDocPtr->mBodyLines.size();
+            for (size_t i=idx; i<LLMDocPtr->mBodyLines.size(); ++i) {
+                psg += LLMDocPtr->mBodyLines[i] + "\n";
+                if (psg.size() >= size_t(200 * 3)) {
+                    next = min(next, i + 1);
+                }
+                if (psg.size() >= size_t(450 * 3)) {
+                    break;
+                }
+            }
+            AGG_LOG(DEBUG, "SplitDoc2Psg idx=%llu, next=%llu, num=%llu, url=%s, title=%s, psg=%s",
+                    idx, next, num,
+                    LLMDocPtr->mUrl.c_str(), LLMDocPtr->mTitle.c_str(), psg.c_str());
+            if (psg.size() >= size_t(20 * 3)) {
+                LLMPsgPtr LLMPsgPtr(new LLMPsg(idx, ++sampleId, LLMDocPtr->mTitle, psg));
+                LLMDocPtr->mPsgVec.emplace_back(LLMPsgPtr);
+            }
+            idx = next; // overlap方式，取200个字后的passage
+        }
+        // if (LLMDocPtr->mRecall != "WEB_AGG") {
+        //     AGG_LOG(ERROR, "SplitDoc2Psg total psg=%llu, source=%s, body=%s", num, LLMDocPtr->mRecall.c_str(), LLMDocPtr->mBody.c_str());
+        // }
+    }
+    AGG_LOG(DEBUG, "SplitDoc2Psg total psg=%llu", sampleId);
+}
+
+void SimpleRankProcessor::GetScores(std::vector<LLMDocPtr>& LLMDocPtrQueue)
+{
+    // 构造请求串并请求，获取段落级别的qtc、pr分数
+    //std::string query = StripQueryLine(AggContextHelper::GetRawQuery(mAggContext));
+    string query = AggContextHelper::GetRawQuery(mAggContext);
+    if (!query.empty())
+        query = StringTool::ReplaceStr(query, "\n", "");
+
+    AGG_LOG(ERROR, "query=%s", query.c_str());
+	int hashQueryNum = (int)HashAlgorithm::HashString64(query.c_str());
+    
+    FilterRequestQtc(LLMDocPtrQueue, query, false);
+    int64_t start_time = autil::TimeUtility::currentTimeInMicroSeconds();
+
+    FilterRequestPrNew(LLMDocPtrQueue, query, true);
+    int64_t end_time = autil::TimeUtility::currentTimeInMicroSeconds();
+    AGG_LOG(ERROR, "Wait PR COST:%d", end_time - start_time);
+
+	for (size_t i=0; i<LLMDocPtrQueue.size(); ++i) {
+		std::vector<LLMPsgPtr>& psgVec = LLMDocPtrQueue[i]->mPsgVec;
+		for (size_t j = 0; j < psgVec.size(); ++j) {
+			LLMPsgPtr curPsg = psgVec[j];
+			AGG_LOG(DEBUG, "recall=%s, pr=%lf, qtc=%lf, query=%s, title=%s, psg=%s",
+				LLMDocPtrQueue[i]->mRecall.c_str(), curPsg->mPR, curPsg->mQtc,
+				query.c_str(), curPsg->mTitle.c_str(), curPsg->mPsg.c_str());
+		}
+	}
+}
+
+void SimpleRankProcessor::FilterRequestQtc(std::vector<LLMDocPtr>& LLMDocPtrQueue, const std::string& query, bool NeedFilter){
+    size_t batch = 4;
+    vector<vector<LLMPsgPtr>> psgSampleVec;
+    vector<HttpResponsePtr> qtcRespVec;
+    vector<LLMPsgPtr> cands;
+	// 异步请求qtc得分
+	for (size_t i =0; i<LLMDocPtrQueue.size(); ++i) {
+		std::vector<LLMPsgPtr>& psgVec = LLMDocPtrQueue[i]->mPsgVec;
+		for (size_t j = 0; j < psgVec.size(); ++j) {
+			LLMPsgPtr curPsg = psgVec[j];
+			if(!NeedFilter || curPsg->mPR >= 0.1){
+				cands.emplace_back(curPsg);
+			}
+			if (cands.size() >= batch) {
+				BatchRequestQTC(query, cands, psgSampleVec, qtcRespVec);
+				cands.clear();
+			}
+		}
+	}
+	if (! cands.empty()) {
+		BatchRequestQTC(query, cands, psgSampleVec, qtcRespVec);
+		cands.clear();
+	}
+
+	// 异步获取qtc得分
+	for (size_t i=0; i<psgSampleVec.size(); ++i) {
+		vector<double> qtcScores = GetQTC(qtcRespVec[i]);
+		vector<LLMPsgPtr>& psgSample = psgSampleVec[i];
+		if (qtcScores.size() == psgSample.size()) {
+			for (size_t j=0; j<psgSample.size(); ++j) {
+				if(false && qtcScores[j] < 0.1){
+					psgSample[j]->mPR = 0.0;
+					psgSample[j]->mQtc = 0.0;
+				}else{
+					psgSample[j]->mQtc = qtcScores[j];
+				}
+			}
+		}
+	}
+}
+
+void SimpleRankProcessor::BatchRequestQTC(const std::string& query,
+        std::vector<LLMPsgPtr>& cands,
+        std::vector<std::vector<LLMPsgPtr>>& psgSampleVec,
+        std::vector<HttpResponsePtr>& qtcRespVec)
+{
+    // 获取词表映射
+    AggDataWrapper dataWrapper("qc_bert_token"); 
+    QcBertTokenData * qcBertTokenData = dataWrapper.Get<QcBertTokenData>();
+    if (qcBertTokenData == nullptr) {
+        AGG_LOG(ERROR, "get bert tokenizer dict failed!");
+        return;
+    }
+    const std::map<std::string, int>& wordIdInBertQC = qcBertTokenData->GetData();
+    std::vector<std::string> qtc_request_dat_vec;
+    for (size_t i=0; i<cands.size(); ++i) {
+        std::string t = cands[i]->mTitle;
+        std::string c = cands[i]->mPsg;
+        std::string single_qtc_request_dat;
+        QtcExtractor::extractQtcStdkv(wordIdInBertQC, query, t, c, single_qtc_request_dat);
+        qtc_request_dat_vec.emplace_back(single_qtc_request_dat);
+    }
+    std::string qtc_request_dat = autil::StringUtil::toString(qtc_request_dat_vec, "\n");
+    
+    // batch请求qtc、pr
+    psgSampleVec.emplace_back(cands);
+    qtcRespVec.emplace_back(RequestQTC(qtc_request_dat));
+}
+
+HttpResponsePtr SimpleRankProcessor::RequestQTC(std::string& qtc_request_dat)
+{
+    QcFeatureRequestPtr qcFeatureRequest = std::make_shared<QcFeatureRequest>(mAggContext);
+    qcFeatureRequest->InitRequestStr(qtc_request_dat);
+    AggHttpWrapper wrapper(mAggContext, mQTCNode);
+    //AGG_LOG(DEBUG, "qtc mRequestStr=%s", qcFeatureRequest->GetRequestStr().c_str());
+    return wrapper.AsyncRequest(qcFeatureRequest);
+}
+
+std::vector<double> SimpleRankProcessor::GetQTC(HttpResponsePtr httpResponse)
+{
+    std::vector<double> empty;
+    if (!httpResponse) {
+        AGG_LOG(ERROR, "get qtc httpResponse failed!");
+        return empty;
+    }
+    ResultPtr result(new QcFeatureResult);
+    if (!httpResponse->GetResult(result)) {
+        AGG_LOG(ERROR, "get qtc httpResponse result failed!");
+        return empty;
+    }
+    QcFeatureResultPtr qcFeatureResult = std::dynamic_pointer_cast<QcFeatureResult>(result);
+    std::vector<float> qtc_scores = qcFeatureResult->GetQcFeature()[0];
+    std::vector<double> qtc_scores_double(qtc_scores.begin(), qtc_scores.end());
+    return qtc_scores_double;
+}
+
+void SimpleRankProcessor::FilterRequestPrNew(std::vector<LLMDocPtr>& LLMDocPtrQueue, const std::string& query, bool NeedFilter)
+{
+    if (query.empty())
+        return;
+
+    AggHttpWrapperPtr wrapper = GetHttpWrapper(mAggContext, "qd_correlation_model");
+
+    vector<LLMPsgPtr> psgSampleVec;
+    for (size_t i =0; i<LLMDocPtrQueue.size(); ++i) {
+		std::vector<LLMPsgPtr>& psgVec = LLMDocPtrQueue[i]->mPsgVec;
+		for (size_t j = 0; j < psgVec.size(); ++j) {
+			LLMPsgPtr curPsg = psgVec[j];
+			if(!NeedFilter ||  curPsg->mQtc >= 0.1) {
+				psgSampleVec.emplace_back(curPsg);
+			}
+		}
+	}
+    
+    AGG_LOG(ERROR, "FilterRequestPrNew size:%d", (int32_t)psgSampleVec.size());
+
+    // 异步请求pr得分
+    uint32_t batch_size = 18; //服务每个集群部署了18个实例
+    uint32_t multi_count = (uint32_t)psgSampleVec.size() / batch_size + 1;
+    
+    for (size_t mi = 0; mi < multi_count; ++mi) { 
+        uint32_t start_idx = mi * batch_size;
+        
+        vector<uint32_t> idxVec;
+        vector<HttpResponsePtr> responsePtrVec;
+        for (uint32_t idx = start_idx; idx < start_idx + batch_size && idx < psgSampleVec.size(); ++idx) {
+            string title = psgSampleVec[idx]->mTitle; 
+            string passage = psgSampleVec[idx]->mPsg;
+            
+            HttpRequestPtr httpRequest(new QdRequest(query, title, passage));
+            HttpResponsePtr response = wrapper->AsyncRequest(httpRequest);
+            if (response) {
+                responsePtrVec.push_back(response);
+                idxVec.push_back(idx);
+            }
+        }
+        
+        for (size_t i = 0; i < responsePtrVec.size(); ++i) {
+            if (!responsePtrVec[i])
+                continue;
+            ResultPtr result(new QdResult);
+            if (!responsePtrVec[i]->GetResult(result)) {
+                AGG_LOG(ERROR, "get pr score failed.");
+                continue;
+            }
+
+            // to do:访问失败的比例，以及访问失败和原来的混用会不会有问题
+            QdResultPtr qdResult = std::dynamic_pointer_cast<QdResult>(result);
+            psgSampleVec[idxVec[i]]->mPR = qdResult->mScore; 
+        }
+    }
+}
+
+void SimpleRankProcessor::SelectDocs(std::vector<LLMDocPtr>& LLMDocPtrQueue, std::string& Source)
+{
+    std::vector<LLMDocPtr> hitQueueAigc;
+    for (auto docPtr: LLMDocPtrQueue) {
+        LLMPsgPtr maxPsg;
+        double maxScore = 0;
+        bool isSelected = false;
+        for (size_t j = 0; j < docPtr->mPsgVec.size(); ++j) {
+            LLMPsgPtr curPsg = docPtr->mPsgVec[j];
+
+            bool match = true;
+            if (Source.find("AGG") != string::npos) {
+                match = curPsg->mQtc >= 1.2 || curPsg->mPR >=0.8 || (curPsg->mQtc >= 0.7 && curPsg->mPR >= 0.5);
+            } else {
+                // match = curPsg->mPR >= 0. && curPsg->mQtc >= 1.06;
+                match = curPsg->mPR >= 0.5 && curPsg->mQtc >= 0.5; //调低阈值
+            }
+
+            if (docPtr->mRecall == "PKURLS") {
+                AGG_LOG(DEBUG, "%d recall=%s, url=%s, title=%s, pr=%lf, qtc=%lf, psg=[%s]",
+                        (int32_t)match, docPtr->mRecall.c_str(), docPtr->mUrl.c_str(), docPtr->mTitle.c_str(),
+                        curPsg->mPR, curPsg->mQtc, curPsg->mPsg.c_str()); 
+            }
+
+            // TODO: 加入权威性、质量分、时效性得分
+            double score = curPsg->mPR * 20 + curPsg->mQtc * 10;
+            if (score > maxScore) {
+                maxScore = score;
+                maxPsg = curPsg;
+            }
+            if (match) {
+                isSelected = true;
+            }
+            // AGG_LOG(ERROR, "SelectDocs doc mPR=%lf, mQTC=%lf, score=%lf, match=%d, recall=%s", curPsg->mPR, curPsg->mQtc, score, int(match), docPtr->mRecall.c_str());
+        }
+        //AGG_LOG(DEBUG, "SelectDocs doc qtcnn=%lf, qtnn=%lf, url=%s, title=%s, maxScore=%lf",
+        //        docPtr->mQtcnn, docPtr->mQtnn, docPtr->mUrl.c_str(), docPtr->mTitle.c_str(), maxScore);
+
+        if (maxPsg) { //body不为空都会有maxPsg
+            docPtr->mPR = maxPsg->mPR;
+            docPtr->mQtc = maxPsg->mQtc;
+            //docPtr->mAuthorityScore = 0.0;//GetAuthorityWeight(docPtr);
+            docPtr->mRankScore = docPtr->mPR * 20 + docPtr->mQtc * 10;// + docPtr->mAuthorityScore * 10;
+            size_t idx = maxPsg->mIdx;
+            size_t accLen = maxPsg->mPsg.size();
+            while (idx >= 1 && idx + 4 >= maxPsg->mIdx) { // 最多往前拓展两行
+                if (accLen + docPtr->mBodyLines[idx - 1].size() < size_t(600 * 3)) {
+                    accLen += docPtr->mBodyLines[idx - 1].size(); // 修复Bug
+                    -- idx;
+                } else {
+                    break;
+                }
+            }
+            docPtr->mBody.clear();
+            for (size_t i=idx; i<docPtr->mBodyLines.size(); ++i) {
+                if (i != idx) docPtr->mBody += "\n";
+                docPtr->mBody += docPtr->mBodyLines[i];
+                if (docPtr->mBody.size() >= size_t(1800 * 3)) { //700字改到1800字，再交由AL抽取，以保障答案完整性
+                    break;
+                }
+            }
+            if (isSelected) {
+                hitQueueAigc.emplace_back(docPtr);
+            }
+
+            AGG_LOG(DEBUG, "recall=%s, url=%s, title=%s, pr=%lf, qtc=%lf, rankscore=%lf, body=%s",
+                    docPtr->mRecall.c_str(), docPtr->mUrl.c_str(), docPtr->mTitle.c_str(),
+                    maxPsg->mPR, maxPsg->mQtc, docPtr->mRankScore, docPtr->mBody.c_str());
+
+            if (docPtr->mRecall == "PKURLS") {
+                AGG_LOG(DEBUG, "final raw psg[%s]", maxPsg->mPsg.c_str());
+                AGG_LOG(DEBUG, "final recall=%s, url=%s, title=%s, pr=%lf, qtc=%lf, rankscore=%lf, body=%s",
+                        docPtr->mRecall.c_str(), docPtr->mUrl.c_str(), docPtr->mTitle.c_str(),
+                        maxPsg->mPR, maxPsg->mQtc, docPtr->mRankScore, docPtr->mBody.c_str());
+            }
+        }
+        else {
+            if (maxPsg) {
+                docPtr->mPR = maxPsg->mPR;
+                docPtr->mQtc = maxPsg->mQtc;
+                docPtr->mRankScore = docPtr->mPR * 20 + docPtr->mQtc * 10;// + docPtr->mAuthorityScore * 10;
+                AGG_LOG(ERROR, "not select doc [%s], source [%s], url [%s], pr=%lf, qtc=%lf, rankscore=%lf", docPtr->mTitle.c_str(), docPtr->mRecall.c_str(), docPtr->mUrl.c_str(), docPtr->mPR, docPtr->mQtc, docPtr->mRankScore);
+            }
+            else {
+                AGG_LOG(ERROR, "not select doc [%s], source [%s], url [%s], body [%s]", docPtr->mTitle.c_str(), docPtr->mRecall.c_str(), docPtr->mUrl.c_str(), docPtr->mBody.c_str());
+            }
+        }
+    }
+
+    // 根据rankscore排序
+    sort(hitQueueAigc.begin(), hitQueueAigc.end(), [](LLMDocPtr x, LLMDocPtr y) {
+        return x->mRankScore > y->mRankScore;
+    });
+
+    LLMDocPtrQueue.swap(hitQueueAigc);
+}
+*/
+
+BaseProcessor * SimpleRankProcessor::DoClone()
+{
+    return new SimpleRankProcessor(*this);
+}
+
+void SimpleRankProcessor::DoDestroy()
+{
+    delete this;
+}
+
+bool SimpleRankProcessor::RegisterMethods()
+{
+    return true;
+}
+
+bool SimpleRankProcessor::RegisterActors()
+{
+    return true;
+}
+
+AGG_END_NAMESPACE(agg_web2);
+

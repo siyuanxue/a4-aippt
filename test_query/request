@@ -1,0 +1,36 @@
+function run()
+{
+    sess=`openssl rand -base64 12`
+    uid=jinru.yjr
+    #curl "http://11.180.61.211:45671/web" -d '{"version":1,"target":"request","communication":{"uid":"'${uid}'","sessionid":"'${sess}'","reqid":"282f7cf5-0680-446f-b8db-5cc5dfb14550","resid":0},"data":{"message":{"query":"'${1}'","status":"init"}},"bucket":{"k1":"v1","k2":"v2","k3":"v3"},"error_code":0,"error_msg":"","timestamp":"1682390791","debug": "1"}'
+    curl "http://11.180.61.211:45671/agg" -H 'Accept:text/event-stream' -d '{"version":1,"target":"request","communication":{"uid":"'${uid}'","sessionid":"'${sess}'","reqid":"282f7cf5-0680-446f-b8db-5cc5dfb14550","resid":0},"data":{"message":{"query":"'${1}'","status":"init"}},"bucket":{"k1":"v1","k2":"v2","k3":"v3"},"error_code":0,"error_msg":"","timestamp":"1682390791"}'
+}
+
+
+
+set -x
+
+q="赫莲娜"
+q="杭州杏梅尖在哪里？"
+q="杭州杏梅尖爬山需要多久"
+q="阿里股票"
+q="阿里股票多少"
+q="阿里股价"
+q="百度股价"
+q="美的股价"
+q="杭州杏梅尖在哪里 爬山要多久"
+q="电脑黑屏怎么办"
+q=电脑黑屏怎么办
+q="范冰冰"
+q="天空"
+q="老鼠病了可以吃老鼠药吗"
+q="今天天气"
+q=2013年中秋是哪天
+q=今天是哪号
+q=难搞
+q="天空为什么是蓝色的"
+q="杭州杏梅尖在哪里？爬山需要多久"
+q=你知道刘德华慈善基金会吗
+
+
+run $q

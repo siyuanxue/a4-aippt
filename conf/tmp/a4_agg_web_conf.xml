@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<A4>
+  <main>
+    <listen>0.0.0.0:11111</listen>
+    <thread_count>50</thread_count>
+    <task_queue_count>1000</task_queue_count>
+    <amonitor_service_name>a4_agg_web</amonitor_service_name>
+    <amonitor_agent_port>10086</amonitor_agent_port>
+    <workdir>./</workdir>
+    <control_cmd_location>/cmd</control_cmd_location>
+    <control_task_queue_count>1</control_task_queue_count>
+  </main>
+
+  <plugin>
+    <modules>
+      <module name="a4_agg_web_module" path="./build/debug64/lib/liba4_agg_web.so"> 
+	<params>
+	  <config_collector>sc_config:sc_config,host_config:host_config,intention_template_config:intention_template_config,timeliness_config:timeliness_config,online_dedup_config:online_dedup_config</config_collector>
+	  <data_collector>stopword:stopword,host_intention:host_intention,detail_intention:detail_intention,sc_dedup:sc_dedup,url_dedup:url_dedup,url_mapping:url_mapping,url_mapping_black:url_mapping_black,transcode:transcode,makeup:makeup</data_collector>
+	</params>
+      </module>
+      <module name="a4_agg_processor_module" path="./_external/usr/local/lib64/libagg_processor.so"> 
+	<params>
+	</params>
+      </module>
+    </modules>
+
+    <processors>
+      <processor name="ip_limit_processor" module_name="" class_name="IpLimitProcessor">
+	<params>
+	  <allow>10.99.0.0/16</allow>
+	  <deny>*</deny>
+	</params>
+      </processor>
+      <processor name="request_limit_processor" module_name="" class_name="RequestLimitProcessor">
+	<params>
+	  <max_qps>0</max_qps>
+	</params>
+      </processor>
+      <processor name="query_parse_processor" module_name="a4_agg_web_module" class_name="QueryParseProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="qf_processor" module_name="a4_agg_processor_module" class_name="QueryFilterProcessor">
+	<params>
+	  <qf_node>query_filter/wqf</qf_node>
+	</params>
+      </processor>
+      <processor name="qp_rerank_processor" module_name="a4_agg_web_module" class_name="QpRerankProcessor">
+	<params>
+	  <qp_node>qp</qp_node>
+	  <channels_clusters>mainindex:web_small_index:fastindex,vip,galaxy;bigindex:web_big_index:bigindex;rtindex:web_rt_index:web_rt;qaindex:web_qa_index:qa</channels_clusters>
+	  <kv_item>fr:wap,ip:0.0.0.0,st:wap,tl:54,sl:100,adult_demote:255</kv_item>
+	  <config_item>start:0,hit:,navigationalQuery:on,filtermode:11</config_item>
+	</params>
+      </processor>
+
+      <processor name="request_clickserver_processor" module_name="a4_agg_web_module" class_name="RequestClickServerProcessor">
+	<params>
+	  <clickserver_node>clickserver</clickserver_node>
+	  <config_item>format:protobuf,start:0,hit:20</config_item>
+	  <cluster_name>ClickServer</cluster_name>
+	</params>
+      </processor>
+
+      <processor name="request_component_processor" module_name="a4_agg_web_module" class_name="RequestComponentProcessor">
+	<params>
+	  <makeup_node>makeup/search</makeup_node>
+	  <rs_node>relative_search</rs_node>
+	  <arbiter_node>arbiter</arbiter_node>
+	  <max_start_hit>50</max_start_hit>
+	  <default_vendor>100002</default_vendor>
+	</params>
+      </processor>
+
+      <processor name="cache_read_processor" module_name="a4_agg_web_module" class_name="CacheReadProcessor">
+	<params>
+	  <max_start_hit>50</max_start_hit>
+	  <cache_key_channel>mainindex</cache_key_channel>
+	  <cache_node>cache</cache_node>
+	  <magic_number>12345</magic_number>
+	</params>
+      </processor>
+
+      <processor name="qrs_clause_processor" module_name="a4_agg_web_module" class_name="QrsClauseProcessor">
+	<params>
+	  <common>distinct=dist_key:V_HOST_HASH,dist_count:5;dist_key:V_HOST_HASH,dist_count:2#config=format:protobuf,no_summary:yes,proto_format_option:pb_matchdoc_format,timeout:1000</common>
+	  <mainindex>config=searcher_return_hits:10,hit:500,start:0#rank=rank_profile:DefaultProfile#attribute=V_URL_HASH,V_URL_DEPTH,V_HOST_HASH,V_HOST_RANK,V_HOST_G_PR,V_DOMAIN_HASH,PageIntention,PageCategory,PageAttributeTag,PageQuality,OfflineQuality</mainindex>
+	  <bigindex>config=searcher_return_hits:10,hit:1000,start:0#rank=rank_profile:DefaultProfile#attribute=V_URL_HASH,V_URL_DEPTH,V_HOST_HASH,V_HOST_RANK,V_HOST_G_PR,V_DOMAIN_HASH,PageIntention,PageCategory,PageAttributeTag,PageQuality,OfflineQuality</bigindex>
+	  <qaindex>config=searcher_return_hits:10,hit:50,start:0#rank=rank_profile:DefaultProfile#attribute=V_URL_HASH,V_URL_DEPTH,V_HOST_HASH,V_HOST_RANK,V_HOST_G_PR,V_DOMAIN_HASH,PageIntention,PageCategory,PageAttributeTag,PageQuality,OfflineQuality</qaindex>
+	  <rtindex>config=searcher_return_hits:10,hit:500,start:0#rank=rank_profile:DefaultProfile#attribute=V_URL_HASH,V_URL_DEPTH,V_HOST_HASH,V_HOST_RANK,V_HOST_G_PR,V_DOMAIN_HASH,PageIntention,PageCategory,PageAttributeTag,PageQuality</rtindex>
+	</params>
+      </processor>
+
+      <processor name="request_index_processor" module_name="a4_agg_web_module" class_name="RequestIndexProcessor">
+	<params>
+	  <basic_index>mainindex;qaindex;rtindex</basic_index>
+	  <big_index>bigindex</big_index>
+	  <need_bigindex_totalhitcount>10000</need_bigindex_totalhitcount>
+	  <need_bigindex_firstpagescore>80</need_bigindex_firstpagescore>
+	</params>
+      </processor>
+      <processor name="agg_rerank_processor" module_name="a4_agg_web_module" class_name="AggRerankProcessor">
+	<params>
+	  <distinct_param>dist_key:V_HOST_HASH,dist_count:5;dist_key:V_HOST_HASH,dist_count:2</distinct_param>
+	</params>
+      </processor>
+      <processor name="sifter_attribute_processor" module_name="a4_agg_processor_module" class_name="SifterAttributeProcessor">
+	<params>
+	  <sifter_node>sifter</sifter_node>
+	  <max_sifter_count>500</max_sifter_count>
+	</params>
+      </processor>
+      <processor name="fetch_summary_processor" module_name="a4_agg_processor_module" class_name="FetchSummaryProcessor">
+	<params>
+	  <max_start_hit>60</max_start_hit>
+	  <fetch_count>60</fetch_count>
+	</params>
+      </processor>
+      <processor name="cache_update_processor" module_name="a4_agg_web_module" class_name="CacheUpdateProcessor">
+	<params>
+	  <index_list>mainindex,bigindex,qaindex,rtindex</index_list>
+	  <effective_time>30</effective_time>
+	  <cache_node>cache</cache_node>
+	  <compress_type>snappy</compress_type>
+	</params>
+      </processor>
+      <processor name="sifter_summary_processor" module_name="a4_agg_processor_module" class_name="SifterSummaryProcessor">
+	<params>
+	  <sifter_node>sifter</sifter_node>
+	  <max_sifter_count>50</max_sifter_count>
+	  <max_start_hit>50</max_start_hit>
+	</params>
+      </processor>
+      <processor name="get_component_processor" module_name="a4_agg_web_module" class_name="GetComponentProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="internal_merge_processor" module_name="a4_agg_web_module" class_name="InternalMergeProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="summary_modify_processor" module_name="a4_agg_web_module" class_name="SummaryModifyProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="internal_dedup_processor" module_name="a4_agg_web_module" class_name="InternalDedupProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="click_feedback_processor" module_name="a4_agg_web_module" class_name="ClickFeedbackProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="final_rerank_processor" module_name="a4_agg_web_module" class_name="FinalRerankProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="external_merge_processor" module_name="a4_agg_web_module" class_name="ExternalMergeProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="external_dedup_processor" module_name="a4_agg_web_module" class_name="ExternalDedupProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="result_aggregator_processor" module_name="a4_agg_web_module" class_name="ResultAggregatorProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="makeup_processor" module_name="a4_agg_web_module" class_name="MakeUpProcessor">
+	<params>
+	</params>
+      </processor>
+      <processor name="cutout_processor" module_name="a4_agg_processor_module" class_name="CutoutProcessor">
+	<params>
+	  <max_start_hit>50</max_start_hit>
+	</params>
+      </processor>
+      <processor name="rf_processor" module_name="a4_agg_processor_module" class_name="ResultFilterProcessor">
+	<params>
+	  <rf_node>result_filter/wrf</rf_node>
+	</params>
+      </processor>
+      <processor name="log_processor" module_name="a4_agg_processor_module" class_name="LogProcessor">
+	<params></params>
+      </processor>
+      <processor name="result_format_processor" module_name="a4_agg_web_module" class_name="ResultFormatProcessor">
+	<params>
+	</params>
+      </processor>
+    </processors>
+
+    <selectors>
+      <selector name="default_selector_1" module_name="" class_name="DefaultAppSelector">
+	<params><app_name>agg_web</app_name></params>
+      </selector>
+      <selector name="default_selector_2" module_name="" class_name="DefaultAppSelector">
+	<params><app_name>agg_web</app_name></params>
+      </selector>
+    </selectors>  
+
+    <loaders>
+      <loader name="online_dedup_config_loader" module_name="a4_agg_web_module" class_name="OnlineDedupConfigLoader">
+	<params></params>
+      </loader>
+      <loader name="host_config_loader" module_name="a4_agg_web_module" class_name="HostConfigLoader">
+	<params></params>
+      </loader>
+      <loader name="sc_config_loader" module_name="a4_agg_web_module" class_name="ScConfigLoader">
+	<params></params>
+      </loader>
+      <loader name="intention_template_config_loader" module_name="a4_agg_web_module" class_name="IntentionTemplateConfigLoader">
+	<params></params>
+      </loader>
+      <loader name="timeliness_config_loader" module_name="a4_agg_web_module" class_name="TimelinessConfigLoader">
+	<params></params>
+      </loader>
+      <loader name="stopword_data_loader" module_name="a4_agg_web_module" class_name="DefaultDataLoader">
+	<params>
+	  <data_type>SetUserData</data_type>
+	  <data_param>type:string</data_param>
+	</params>
+      </loader>
+      <loader name="host_intention_data_loader" module_name="a4_agg_web_module" class_name="DefaultDataLoader">
+	<params>
+	  <data_type>HostIntentionData</data_type>
+	  <data_param></data_param>
+	</params>
+      </loader>
+      <loader name="detail_intention_data_loader" module_name="a4_agg_web_module" class_name="DefaultDataLoader">
+	<params>
+	  <data_type>DetailIntentionData</data_type>
+	  <data_param></data_param>
+	</params>
+      </loader>
+      <loader name="sc_dedup_data_loader" module_name="a4_agg_web_module" class_name="DefaultDataLoader">
+	<params>
+	  <data_type>ScDedupData</data_type>
+	  <data_param></data_param>
+	</params>
+      </loader>
+      <loader name="url_dedup_data_loader" module_name="a4_agg_web_module" class_name="DefaultDataLoader">
+	<params>
+	  <data_type>UrlDedupData</data_type>
+	  <data_param></data_param>
+	</params>
+      </loader>
+      <loader name="url_mapping_data_loader" module_name="a4_agg_web_module" class_name="DefaultDataLoader">
+	<params>
+	  <data_type>UrlMappingData</data_type>
+	  <data_param></data_param>
+	</params>
+      </loader>
+      <loader name="url_mapping_black_data_loader" module_name="a4_agg_web_module" class_name="DefaultDataLoader">
+	<params>
+	  <data_type>UrlMappingBlackData</data_type>
+	  <data_param></data_param>
+	</params>
+      </loader>
+      <loader name="transcode_data_loader" module_name="a4_agg_web_module" class_name="DefaultDataLoader">
+	<params>
+	  <data_type>TranscodeData</data_type>
+	  <data_param></data_param>
+	</params>
+      </loader>
+      <loader name="makeup_data_loader" module_name="a4_agg_web_module" class_name="DefaultDataLoader">
+	<params>
+	  <data_type>MakeUpData</data_type>
+	  <data_param></data_param>
+	</params>
+      </loader>
+    </loaders>
+
+    <loadbalances>
+      <loadbalance name="hash_strategy" module_name="" class_name="HashLoadBalanceStrategy" />
+      <loadbalance name="rr_strategy" module_name="" class_name="RrLoadBalanceStrategy" />
+    </loadbalances>
+
+  </plugin>
+
+  <nodes>
+    <node name="qp" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>1000</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="rr_strategy">
+	  <params>
+	  </params>
+	</lb_strategy>
+	<specs>
+	  <!-- <spec group="1" weight="2" max_fails="3" fail_timeout="10000">10.99.48.49:7771</spec> -->
+	  <spec group="2" weight="2" max_fails="3" fail_timeout="10000">10.99.64.12:7771</spec>
+	</specs>
+      </upstream>
+    </node>
+
+    <node name="sifter" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>50</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="rr_strategy">
+	  <params></params>
+	</lb_strategy>
+	<specs>
+	  <spec group="1" weight="2" max_fails="30" fail_timeout="10000">10.99.52.91:8089</spec>
+	  <spec group="1" weight="2" max_fails="30" fail_timeout="10000">10.99.52.93:8089</spec>
+	  <spec group="1" weight="2" max_fails="30" fail_timeout="10000">10.99.76.61:8089</spec>
+	  <spec group="1" weight="2" max_fails="30" fail_timeout="10000">10.99.76.64:8089</spec>
+	</specs>
+	<checkalive checkurl="/status" expect_code="200 302" interval="0" timeout="1000" fail_count="3" rise_count="3" />
+      </upstream>
+    </node>
+
+    <node name="query_filter" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>100</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="rr_strategy">
+	  <params></params>
+	</lb_strategy>
+	<specs>
+	  <spec group="1" weight="2" max_fails="3" fail_timeout="10000">10.99.20.66:8898</spec>
+	</specs>
+	<checkalive checkurl="/status" expect_code="200 302" interval="0" timeout="1000" fail_count="3" rise_count="3" />
+      </upstream>
+    </node>  
+
+    <node name="result_filter" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>100</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="rr_strategy">
+	    <params></params>
+	</lb_strategy>
+	<specs>
+	    <spec group="1" weight="2" max_fails="3" fail_timeout="10000">10.99.20.66:8899</spec>
+	</specs>
+	<checkalive checkurl="/status" expect_code="200 302" interval="0" timeout="1000" fail_count="3" rise_count="3" />
+      </upstream>
+    </node>
+
+    <node name="makeup" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>1000</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="rr_strategy">
+	  <params>
+	  </params>
+	</lb_strategy>
+	<specs>
+	  <spec group="1" weight="2" max_fails="3" fail_timeout="10000">10.99.52.93:7077</spec>
+	  <spec group="2" weight="2" max_fails="3" fail_timeout="10000">10.99.52.91:7077</spec>
+	</specs>
+      </upstream>
+    </node>
+
+    <node name="clickserver" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>1000</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="hash_strategy">
+	  <params>
+	    <hash_key>hash</hash_key>
+	  </params>
+	</lb_strategy>
+	<specs>
+	  <spec group="1" weight="2" max_fails="3" fail_timeout="10000">10.99.76.72:8537</spec>
+	  <spec group="2" weight="2" max_fails="3" fail_timeout="10000">10.99.76.31:8537</spec>
+	</specs>
+      </upstream>
+    </node>
+
+    <node name="cache" type="memcached">
+      <timeout>40</timeout>
+      <specs>
+	<spec>10.99.0.58:11211</spec>
+      </specs>
+    </node>
+
+    <node name="relative_search" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>1000</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="rr_strategy">
+	  <params>
+	  </params>
+	</lb_strategy>
+	<specs>
+	  <spec group="1" weight="2" max_fails="3" fail_timeout="10000">10.99.68.61:7651</spec>
+	  <spec group="2" weight="2" max_fails="3" fail_timeout="10000">10.99.68.63:7651</spec>
+	</specs>
+      </upstream>
+    </node>
+
+    <node name="arbiter" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>1000</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="rr_strategy">
+	  <params>
+	  </params>
+	</lb_strategy>
+	<specs>
+	  <spec group="1" weight="2" max_fails="30" fail_timeout="10000">10.99.16.29:9081</spec>
+	</specs>
+      </upstream>
+    </node>
+
+    <node name="mainindex" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>1000</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="hash_strategy">
+	  <params>
+	    <hash_key>hash</hash_key>
+	  </params>
+	</lb_strategy>
+	<specs>
+	  <spec group="1" weight="2" max_fails="3" fail_timeout="10000">10.99.64.58:10003</spec>
+	  <spec group="2" weight="2" max_fails="3" fail_timeout="10000">10.99.68.24:10003</spec>
+	</specs>
+      </upstream>
+    </node>
+
+    <node name="rtindex" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>100</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="hash_strategy">
+	  <params>
+	    <hash_key>hash</hash_key>
+	  </params>
+	</lb_strategy>
+	<specs>
+	  <spec group="1" weight="2" max_fails="3" fail_timeout="10000">10.99.60.55:10003</spec>
+	  <!-- <spec group="2" weight="2" max_fails="3" fail_timeout="10000">10.99.68.78:10003</spec> -->
+	</specs>
+      </upstream>
+    </node>
+
+    <node name="qaindex" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>1000</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="hash_strategy">
+	  <params>
+	    <hash_key>hash</hash_key>
+	  </params>
+	</lb_strategy>
+	<specs>
+	  <spec group="1" weight="2" max_fails="3" fail_timeout="10000">10.99.64.58:10003</spec>
+	  <spec group="2" weight="2" max_fails="3" fail_timeout="10000">10.99.68.24:10003</spec>
+	</specs>
+      </upstream>
+    </node>
+
+    <node name="bigindex" type="http">
+      <conn_pool_size>50</conn_pool_size>
+      <timeout>1000</timeout>
+      <max_qps>0</max_qps>
+      <upstream>
+	<lb_strategy name="hash_strategy">
+	  <params>
+	    <hash_key>hash</hash_key>
+	  </params>
+	</lb_strategy>
+	<specs>
+	  <!-- <spec group="1" weight="2" max_fails="3" fail_timeout="10000">10.99.92.4:10003</spec> -->
+	  <spec group="2" weight="2" max_fails="3" fail_timeout="10000">10.99.56.77:10003</spec>
+	</specs>
+      </upstream>
+    </node>
+
+  </nodes>
+
+  <datas>  
+    <data name="online_dedup_config" path="./conf/online_dedup.conf" loader="online_dedup_config_loader" update_interval="300000"/>
+    <data name="host_config" path="./conf/host.conf" loader="host_config_loader" update_interval="300000"/>
+    <data name="sc_config" path="./conf/sc.conf" loader="sc_config_loader" update_interval="300000"/>
+    <data name="timeliness_config" path="./conf/timeliness.conf" loader="timeliness_config_loader" update_interval="300000"/>
+    <data name="intention_template_config" path="./conf/intention_template.conf" loader="intention_template_config_loader" update_interval="300000"/>
+    <data name="stopword" path="./data/stopword.dat" loader="stopword_data_loader" update_interval="0"/>
+    <data name="host_intention" path="./data/host_intention.dat" loader="host_intention_data_loader" update_interval="0"/>
+    <data name="detail_intention" path="./data/detail_intention.dat" loader="detail_intention_data_loader" update_interval="0"/>
+    <data name="sc_dedup" path="./data/scdedup.dat" loader="sc_dedup_data_loader" update_interval="0"/>
+    <data name="url_dedup" path="./data/urldedup.dat" loader="url_dedup_data_loader" update_interval="0"/>
+    <data name="url_mapping" path="./data/urlmapping.dat" loader="url_mapping_data_loader" update_interval="0"/>
+    <data name="url_mapping_black" path="./data/urlmappingblack.dat" loader="url_mapping_black_data_loader" update_interval="0"/>
+    <data name="transcode" path="./data/shenma_tc.dat" loader="transcode_data_loader" update_interval="0"/>
+    <data name="makeup" path="./data/makeup.dat" loader="makeup_data_loader" update_interval="0"/>
+  </datas>
+
+  <apps>
+    <app name="agg_web">
+      <phase name="1">
+	<processor name="ip_limit_processor" />
+	<processor name="request_limit_processor" />
+	<processor name="query_parse_processor" />
+	<!-- <processor name="qf_processor" /> -->
+      </phase>
+      <phase name="2">
+	<processor name="qp_rerank_processor" />
+	<processor name="request_clickserver_processor" />
+	<processor name="request_component_processor" />
+	<processor name="cache_read_processor" />
+	<processor name="qrs_clause_processor" />
+	<processor name="request_index_processor" />
+	<processor name="agg_rerank_processor" />
+	<!-- <processor name="sifter_attribute_processor" /> -->
+	<processor name="fetch_summary_processor" />
+	<processor name="cache_update_processor" />
+      </phase>
+      <phase name="3">
+	<!-- <processor name="sifter_summary_processor" /> -->
+	<processor name="get_component_processor" />
+	<processor name="internal_merge_processor" />
+	<processor name="summary_modify_processor" />
+	<!-- <processor name="internal_dedup_processor" /> -->
+	<processor name="click_feedback_processor" />
+	<processor name="final_rerank_processor" />
+      </phase>
+      <phase name="4">
+	<processor name="external_merge_processor" />
+	<processor name="result_aggregator_processor" />
+	<processor name="external_dedup_processor" />
+	<processor name="makeup_processor" />
+      </phase>
+      <phase name="5">
+	<processor name="cutout_processor" />
+	<!-- <processor name="rf_processor" /> -->
+	<processor name="log_processor" />
+	<processor name="result_format_processor" />
+      </phase>
+    </app>
+  </apps>
+  
+  <locations>
+    <location name="/" selector="default_selector_1" />
+    <location name="*" selector="default_selector_2" />
+  </locations>
+  
+</A4>
+

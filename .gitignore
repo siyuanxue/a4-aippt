@@ -1,0 +1,11 @@
+tags
+.DS_Store
+*.o
+*.py~
+*.pyc
+build/
+_external/
+.sconsign.dblite
+build_options.py
+*.swp
+diffs

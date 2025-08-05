@@ -1,0 +1,54 @@
+sess=`openssl rand -base64 12`
+reqid=`openssl rand -base64 12`
+
+ipport=33.52.44.71:25857
+ipport=11.180.61.211:56781
+
+function run()
+{
+    ab=`python get_ab.py`
+    echo $ab
+    echo "------------------------- "$1
+    uid=jinru.yjr
+    curl "http://${ipport}/web" -d '{"version":1,"target":"request","communication":{"uid":"'${uid}'","sessionid":"'${sess}'","reqid":"'${reqid}'","resid":0},"data":{"message":{"query":"'${1}'","status":"init"}},"bucket":'$ab',"error_code":0,"error_msg":"","timestamp":"1682390791"}'
+}
+
+
+
+set -x
+
+run 天空为什么是蓝色的
+#run 区块链技术应用的前景和风险
+
+#run 今天A股多少点
+#run 阿里巴巴十八罗汉是谁
+#run 创始人是谁
+#run 张飞是什么性格
+#run 张飞什么性格
+#run 阿里巴巴现任CEO是谁
+#run 蔡崇信的花名是什么
+#run 世界十大高峰是哪些
+
+#run 世界十大最高峰是什么
+#run 第二个高的是哪个
+
+
+#run 阿里巴巴的CEO是谁
+#run 创始人是谁
+#run 五代十国是什么
+
+
+#run 世界十大最高峰是什么
+
+#run 介绍一下北宋
+#run 北宋是怎么建立的
+
+#run 北宋建立过程
+
+#run 阿里巴巴董事会主席是
+
+#run 阿里巴巴港股呢
+
+
+#run 中国现在有直飞马达加斯加的航班吗？
+

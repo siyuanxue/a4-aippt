@@ -1,0 +1,2197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<A4>
+    <main>
+        <listen>0.0.0.0:9222</listen>
+        <net_io_thread_count>4</net_io_thread_count>
+        <thread_count>100</thread_count>
+        <task_queue_count>1000</task_queue_count>
+        <amonitor_service_name>a4_agg_web_180_debug_agg2</amonitor_service_name>
+        <allstar_server_spec>42.156.215.219:8080/setgraph</allstar_server_spec>
+        <amonitor_agent_port>10086</amonitor_agent_port>
+        <workdir>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/</workdir>
+        <control_cmd_location>/cmd</control_cmd_location>
+        <control_task_queue_count>1</control_task_queue_count>
+        <close_std_fd>off</close_std_fd>
+    </main>
+
+    <threadpools>
+        <threadpool name="interleaving_thread_pool">
+            <thread_count>$(thread_count_interleaving)</thread_count>
+            <task_queue_count>1000</task_queue_count>
+        </threadpool>
+    </threadpools>
+
+    <strace>
+        <sls_config_remote_path>straceconfig.vip.tbsite.net:15009/strace</sls_config_remote_path>
+        <debug_level>1</debug_level>
+    </strace>
+
+    <plugin>
+        <modules dlclose="on">
+            <module name="a4_ns_plugin" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/lib64/liba4_ns_plugin.so">
+                <params>
+                    <zk_spec>$(cm_zk_spec)</zk_spec>
+                    <zk_path>$(cm_zk_path)</zk_path>
+                    <timeout>10</timeout>
+                    <sub_type>st_part</sub_type>
+                    <compress_type>ct_snappy</compress_type>
+                    <sub_cluster_lbs>$(lbs)</sub_cluster_lbs>
+                    <sub_cluster_shield>$(shield)</sub_cluster_shield>
+                    <sub_cluster_query_rewrite>$(query_rewrite)</sub_cluster_query_rewrite>
+                    <sub_cluster_uads>$(uads)</sub_cluster_uads>
+                    <sub_cluster_nest_click>$(ha3_nest_click)</sub_cluster_nest_click>
+                    <sub_cluster_qp>$(qp)</sub_cluster_qp>
+                    <sub_cluster_mainindex>$(ha3_mainindex)</sub_cluster_mainindex>
+                    <sub_cluster_rtindex>$(ha3_webrt)</sub_cluster_rtindex>
+                    <sub_cluster_qaindex>$(ha3_qa_mainindex)</sub_cluster_qaindex>
+                    <sub_cluster_bigindex>$(ha3_bigindex)</sub_cluster_bigindex>
+                    <sub_cluster_s3_mainindex>$(s3_mainindex)</sub_cluster_s3_mainindex>
+                    <sub_cluster_s3_bigindex>$(s3_bigindex)</sub_cluster_s3_bigindex>
+                    <sub_cluster_qa_agg>$(qa_agg)</sub_cluster_qa_agg>
+                    <sub_cluster_sc_aol_caculate>$(sc_aol_caculate)</sub_cluster_sc_aol_caculate>
+                    <sub_cluster_medical_intention>$(medical_intention)</sub_cluster_medical_intention>
+                    <sub_cluster_medical_vertical>$(medical_vertical)</sub_cluster_medical_vertical>
+                    <sub_cluster_arbiter>$(arbiter)</sub_cluster_arbiter>
+                    <sub_cluster_recommend_web>$(recommend_web)</sub_cluster_recommend_web>
+                    <sub_cluster_relative_search>$(relative_search)</sub_cluster_relative_search>
+                    <sub_cluster_spl>$(zeus_agg_specific_logic)</sub_cluster_spl>
+                    <sub_cluster_timeliness>$(timeliness)</sub_cluster_timeliness>
+                    <sub_cluster_ufs_agg_adjuster>$(ufs_agg_adjuster_model)</sub_cluster_ufs_agg_adjuster>
+                    <sub_cluster_feed_replace>$(feed_replace)</sub_cluster_feed_replace>
+                    <sub_cluster_feed_search_gpu_service>$(feed_search_gpu_service)</sub_cluster_feed_search_gpu_service>
+                    <sub_cluster_feed_search_cpu_service>$(feed_search_cpu_service)</sub_cluster_feed_search_cpu_service>
+                    <sub_cluster_relevance>$(relevance)</sub_cluster_relevance>
+                    <sub_cluster_sifter>$(sifter)</sub_cluster_sifter>
+                    <sub_cluster_summary_modify>$(summary_modify)</sub_cluster_summary_modify>
+                    <sub_cluster_makeup>$(makeup)</sub_cluster_makeup>
+                    <sub_cluster_config_server>$(config_server)</sub_cluster_config_server>
+                    <sub_cluster_agg_model_ufs>$(zeus_ufs_app_agg)</sub_cluster_agg_model_ufs>
+                    <sub_cluster_qc_feature_bert>$(zeus_qc_feature_bert)</sub_cluster_qc_feature_bert>
+                    <sub_cluster_qc_feature_bert_p100>$(zeus_qc_feature_bert_p100)</sub_cluster_qc_feature_bert_p100>
+                    <sub_cluster_qc_feature_bert_p2080>$(zeus_qc_feature_bert_2080)</sub_cluster_qc_feature_bert_p2080>
+                    <sub_cluster_agg_feature>$(zeus_agg_feature)</sub_cluster_agg_feature>
+                    <sub_cluster_agg_feature_bucket>$(zeus_agg_feature_bucket)</sub_cluster_agg_feature_bucket>
+                    <sub_cluster_agg_feature_ufs>$(zeus_agg_feature_ufs)</sub_cluster_agg_feature_ufs>
+                    <sub_cluster_ufs_spell_check_model>$(zeus_ufs_app_spell_check)</sub_cluster_ufs_spell_check_model>
+                    <sub_cluster_qu>$(qu_node_ns)</sub_cluster_qu>
+                    <sub_cluster_ufs_app_querylog>$(zeus_ufs_app_querylog)</sub_cluster_ufs_app_querylog>
+                    <sub_cluster_cms>$(cms)</sub_cluster_cms>
+                    <sub_cluster_related_tag_service>$(related_tag_service)</sub_cluster_related_tag_service>
+                </params>
+            </module>
+            <module name="agg_web2_module" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/lib64/liba4_agg_web2.so">
+                <params>
+                    <query_url_pk_file></query_url_pk_file>
+                    <pk_index>mainindex_pk</pk_index>
+                    <mix_dump>0</mix_dump>
+                    <online_dump>0</online_dump>
+                    <l3_dump>0</l3_dump>
+                    <basic_index_set>fast_index;main_index;qa_index</basic_index_set>
+                    <main_index>mainindex:$(vip_cluster),$(galaxy_cluster)</main_index>
+                    <qa_index>qaindex:$(qaindex_cluster)</qa_index>
+                    <big_index>bigindex:$(bigindex_cluster)</big_index>
+                    <fast_index>fastindex:$(fastindex_cluster)</fast_index>
+                    <rt_index>rtindex:$(rtindex_cluster)</rt_index>
+                    <at_index>mainindex_at:$(vip_cluster),$(galaxy_cluster)</at_index>
+                    <local_ip>$(local_ip)</local_ip>
+                    <degrade_param_config_file>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/conf/a4_agg_quarkchat/$(degrade_param_config_file)</degrade_param_config_file>
+                    
+                    <host_config_datas>multi_site,news_site,adult_site,bbs_site,mobile_friendly_site</host_config_datas>
+                    <config_collector>
+                        sc_config:sc_config,intention_template_config:intention_template_config,timeliness_config:timeliness_config,online_dedup_config:multi_online_dedup_config,adjuster_config:adjuster_config
+                    </config_collector>
+                </params>
+            </module>
+        </modules>
+
+        <processors>
+            <processor name="request_parse_processor" module_name="agg_web2_module" class_name="RequestParseProcessor">
+                <params>
+                </params>
+            </processor>
+            <processor name="geo_info_processor" module_name="agg_web2_module" class_name="GeoInfoProcessor">
+                <params>
+                    <lbs>lbs/coordinate</lbs> 
+                </params>
+            </processor>
+            <processor name="query_filter_processor" module_name="agg_web2_module" class_name="QueryFilterProcessor">
+                <params>
+                    <query_filter>query_filter/shield</query_filter>
+                    <app_id>web_query</app_id>
+                    <bid>aggweb</bid>
+                    <default_result>fi:3</default_result>
+                </params>
+            </processor>
+            <processor name="identity_processor" module_name="agg_web2_module" class_name="IdentityProcessor">
+                <params>
+                    <uads_server>uads/uads/uaapi</uads_server>
+                    <uads_header>Host:uads.ucweb.com</uads_header>
+                </params>
+            </processor>
+            <processor name="result_filter_processor" module_name="agg_web2_module" class_name="ResultFilterProcessor">
+                <params>
+                    <result_filter>result_filter/shield</result_filter>
+                    <app_id>web_result</app_id>
+                    <bid>aggweb_result</bid>
+                </params>
+            </processor>
+            <processor name="query_rewrite_processor" module_name="agg_web2_module" class_name="QueryRewriteProcessor">
+                <params>
+                    <query_rewrite_node>query_rewrite</query_rewrite_node>
+                    <querylog_cache_node>querylog_cache</querylog_cache_node>
+                </params>
+            </processor>
+            <processor name="click_feedback_processor" module_name="agg_web2_module" class_name="ClickFeedbackProcessor">
+                <params>
+                    <rt_clickserver>rt_clickserver</rt_clickserver>
+                    <main_clickserver>main_clickserver</main_clickserver> 
+                    <cluster_name>click_server</cluster_name>
+                    <basic_config_item>metrics_src:click,format:protobuf,start:0,hit:20,query_pv_threshold:10,query_doc_pv_threshold:10</basic_config_item>
+                    <config_item>metrics_src:click,format:protobuf,start:0,hit:50,query_pv_threshold:10,query_doc_pv_threshold:10</config_item>
+                    <official_site_dict_server>official_site_dict</official_site_dict_server>
+                </params>
+            </processor>
+            <processor name="query_analysis_processor" module_name="agg_web2_module" class_name="QueryAnalysisProcessor">
+                <params>
+                    <baidu_querylog_node>baidu_querylog</baidu_querylog_node>
+                    <tt_querylog_node>tt_querylog</tt_querylog_node>
+                    <querylog_cache_node>querylog_cache</querylog_cache_node>
+                    <qp_node>qp/web</qp_node>
+                    <channels_clusters>
+                        mainindex:web_small_index:$(vip_cluster),$(galaxy_cluster);bigindex:web_big_index:$(bigindex_cluster);rtindex:web_rt_index:$(rtindex_cluster),$(fastindex_cluster);qaindex:web_qa_index:$(qaindex_cluster);mainindex_at:web_at_index:$(vip_cluster),$(galaxy_cluster)
+                    </channels_clusters>
+                    <kv_item>fr:xxx,ip:0.0.0.0,st:wap,tl:54,sl:100,adult_demote:255,sp:on,mode:xxx,or_logic:v2</kv_item>
+                    <config_item>start:0,hit:,navigationalQuery:on,filtermode:11</config_item>
+                </params>
+            </processor>
+            <processor name="index_processor" module_name="agg_web2_module" class_name="IndexProcessor">
+                <params>
+                    <!-- gen qrs clause -->
+                    <common>
+                        kv=topnAcFeatureThrehold:500#distinct=dist_key:V_HOST_HASH,dist_count:5;dist_key:V_HOST_HASH,dist_count:2#config=format:protobuf,no_summary:yes,proto_format_option:pb_matchdoc_format,timeout:1000,result_compress:snappy
+                    </common>
+                    <index_list>mainindex_at,mainindex,bigindex,qaindex,rtindex</index_list>
+                    <mainindex_at>
+                        config=searcher_return_hits:10,hit:100,start:0#rank=rank_profile:DefaultProfile#attribute=V_MAIN_BODY_LENGTH,CmauthStat,NormalizedUrl,V_TIME,V_TIME_TYPE,V_URL_HASH,V_URL_DEPTH,V_HOST_HASH,V_HOST_RANK,V_HOST_G_PR,V_DOMAIN_HASH,PageIntention,PageCategory,PageAttributeTag,PageQuality,OfflineQuality,V_TOPIC_ID_0,V_TOPIC_WEIGHT_0,V_TOPIC_ID_1,V_TOPIC_WEIGHT_1,FirstIndexedTime,IndustryStat,PQQualityScore,SiteValue,TimeSensitive,V_SECURITY_LEVEL
+                    </mainindex_at>
+                    <mainindex>
+                        config=searcher_return_hits:10,hit:500,start:0#rank=rank_profile:DefaultProfile#attribute=V_MAIN_BODY_LENGTH,CmauthStat,NormalizedUrl,V_TIME,V_TIME_TYPE,V_URL_HASH,V_URL_DEPTH,V_HOST_HASH,V_HOST_RANK,V_HOST_G_PR,V_DOMAIN_HASH,PageIntention,PageCategory,PageAttributeTag,PageQuality,OfflineQuality,V_TOPIC_ID_0,V_TOPIC_WEIGHT_0,V_TOPIC_ID_1,V_TOPIC_WEIGHT_1,FirstIndexedTime,IndustryStat,PQQualityScore,SiteValue,TimeSensitive,V_SECURITY_LEVEL
+                    </mainindex>
+                    <bigindex>
+                        config=searcher_return_hits:10,hit:500,start:0#rank=rank_profile:DefaultProfile#attribute=V_MAIN_BODY_LENGTH,CmauthStat,NormalizedUrl,V_TIME,V_TIME_TYPE,V_URL_HASH,V_URL_DEPTH,V_HOST_HASH,V_HOST_RANK,V_HOST_G_PR,V_DOMAIN_HASH,PageIntention,PageCategory,PageAttributeTag,PageQuality,OfflineQuality,V_TOPIC_ID_0,V_TOPIC_WEIGHT_0,V_TOPIC_ID_1,V_TOPIC_WEIGHT_1,FirstIndexedTime,PQQualityScore,PQQualityScore,SiteValue,TimeSensitive,V_SECURITY_LEVEL
+                    </bigindex>
+                    <qaindex>
+                        distinct=dist_key:V_HOST_HASH,dist_count:10;dist_key:V_HOST_HASH,dist_count:6#kv=sc_summary_conf:1`1280`1`1`1#config=searcher_return_hits:10,hit:50,start:0#rank=rank_profile:DefaultProfile#attribute=V_MAIN_BODY_LENGTH,CmauthStat,NormalizedUrl,V_TIME,V_TIME_TYPE,V_URL_HASH,V_URL_DEPTH,V_HOST_HASH,V_HOST_RANK,V_HOST_G_PR,V_DOMAIN_HASH,PageIntention,PageCategory,PageAttributeTag,PageQuality,OfflineQuality,V_TOPIC_ID_0,V_TOPIC_WEIGHT_0,V_TOPIC_ID_1,V_TOPIC_WEIGHT_1,IndustryStat,PQQualityScore,SiteValue,TimeSensitive,V_SECURITY_LEVEL
+                    </qaindex>
+                    <rtindex>
+                        config=searcher_return_hits:10,hit:500,start:0#rank=rank_profile:DefaultProfile#attribute=V_MAIN_BODY_LENGTH,CmauthStat,NormalizedUrl,V_TIME,V_TIME_TYPE,V_URL_HASH,V_URL_DEPTH,V_HOST_HASH,V_HOST_RANK,V_HOST_G_PR,V_DOMAIN_HASH,PageIntention,PageCategory,PageAttributeTag,PageQuality,PQQualityScore,DNN_AT_ID_ATTR,DNN_TITLE_ID_ATTR,FirstIndexedTime,IndustryStat,SiteValue,TimeSensitive,V_SECURITY_LEVEL
+                    </rtindex>
+                    <ranker_bucket>
+                        bucket_2=mainindex:BucketProfile,qaindex:BucketProfile,bigindex:BucketProfile#bucket_3=mainindex:DefaultProfile,qaindex:DefaultProfile,bigindex:DefaultProfile
+                    </ranker_bucket>
+                    <ranker_bucket_key>ranker</ranker_bucket_key>
+                    <ranker_interleaving_key>ltrmodelexp</ranker_interleaving_key>
+                    <ranker_interleaving>ltrmodelexp=mainindex:BucketProfile,qaindex:BucketProfile</ranker_interleaving>
+                    <interleaving_qrs_config>$(interleaving_qrs_config)</interleaving_qrs_config>
+                    <abtest_qrs_config>$(abtest_qrs_config)</abtest_qrs_config>
+
+                    <!-- cache -->
+                    <max_start_hit>50</max_start_hit>
+                    <main_cache_node>main_cache</main_cache_node>
+                    <main_cache_compress_type>snappy</main_cache_compress_type>
+                    <rt_cache_node>rt_cache</rt_cache_node>
+                    <rt_cache_compress_type>snappy</rt_cache_compress_type>
+
+                    <!-- read cache -->
+                    <cache_key_with_app_name>0</cache_key_with_app_name>
+                    <main_cache_key_channel>mainindex</main_cache_key_channel>
+                    <main_magic_number>agg_web2_senior_123456789</main_magic_number>
+                    <main_cache_index_set></main_cache_index_set>
+                    <rt_cache_key_channel>rtindex</rt_cache_key_channel>
+                    <rt_magic_number>agg_web2_senior_123456789</rt_magic_number>
+                    <rt_cache_index_set></rt_cache_index_set>
+                    <demote_shared_key>adult_demote_shared_key,political_demote_shared_key</demote_shared_key>
+                    
+                    <!-- request index -->
+                    <baidu_querylog_node>baidu_querylog</baidu_querylog_node>
+                    <at_request_rate>0.15</at_request_rate>
+                    <need_atindex_totalhitcount>5000</need_atindex_totalhitcount>
+                    <need_atindex_firstpagescore>400</need_atindex_firstpagescore>
+                    <need_atindex_maxpv>50</need_atindex_maxpv>
+                    <need_bigindex_totalhitcount>10000</need_bigindex_totalhitcount>
+                    <need_bigindex_firstpagescore>80</need_bigindex_firstpagescore>
+                    <need_secondrequest_firstpagescore>200</need_secondrequest_firstpagescore>
+                    <second_request_rate>1.0</second_request_rate>
+                    <extend_query_index_name_map></extend_query_index_name_map>
+                    <degrade_index_set>mainindex,qaindex,rtindex</degrade_index_set>
+                    
+                    <!-- fetch summary -->
+                    <fetch_count>100</fetch_count>
+                    <rule>
+                        phase1_node:query_log,phase2_node:query_log_summary,phase2_type:s3,profile:ContentExtractorProfile,keep_range_id:no,key_type:RAW_PK;phase1_node:mainindex,phase2_node:mainindex_summary,phase2_type:s3,profile:ContentExtractorProfile,keep_range_id:no,key_type:RAW_PK;phase1_node:rtindex,phase2_node:rtindex_summary,phase2_type:ha3,profile:ContentExtractorProfile;phase1_node:qaindex,phase2_node:qaindex_summary,phase2_type:s3,profile:ContentExtractorProfile,keep_range_id:no,key_type:RAW_PK;phase1_node:bigindex,phase2_node:bigindex_summary,phase2_type:s3,profile:ContentExtractorProfile,keep_range_id:no,key_type:RAW_PK;phase1_node:mainindex_at,phase2_node:mainindex_summary,phase2_type:s3,profile:ContentExtractorProfile,keep_range_id:no,key_type:RAW_PK
+                    </rule>
+                    
+                    <!-- update cache -->
+                    <main_cache_index_list>mainindex,bigindex,qaindex</main_cache_index_list>
+                    <main_cache_effective_time>$(main_cache_effective_time)</main_cache_effective_time>
+                    <main_cache_compress_type>snappy</main_cache_compress_type>
+                    <rt_cache_index_list>rtindex</rt_cache_index_list>
+                    <rt_cache_effective_time>$(rt_cache_effective_time)</rt_cache_effective_time>
+                    <rt_cache_compress_type>snappy</rt_cache_compress_type>
+
+                    <!-- senior rerank -->
+                    <!-- online agg model -->
+                    <brain_agg_model_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model&amp;chain=online</brain_agg_model_node>
+                    
+                    <!-- bucket agg model -->
+                    <brain_agg_model_BertL4ACScore_V2_Exam0_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=BertL4ACScore_V2_Exam0</brain_agg_model_BertL4ACScore_V2_Exam0_node>
+                    <brain_agg_model_BertL4ACScore_V2_Exam1_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=BertL4ACScore_V2_Exam1</brain_agg_model_BertL4ACScore_V2_Exam1_node>
+                    <brain_agg_model_BertL4ACScore_V2_Exam2_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=BertL4ACScore_V2_Exam2</brain_agg_model_BertL4ACScore_V2_Exam2_node>
+                    <brain_agg_model_BertL4ACScore_V2_Exam3_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=BertL4ACScore_V2_Exam3</brain_agg_model_BertL4ACScore_V2_Exam3_node>
+                    <brain_agg_model_BertL4ACScore_V2_Exam4_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=BertL4ACScore_V2_Exam4</brain_agg_model_BertL4ACScore_V2_Exam4_node>
+
+                    <brain_agg_model_BertL4ACScore_V3_Exam0_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=BertL4ACScore_V3_Exam0</brain_agg_model_BertL4ACScore_V3_Exam0_node>
+                    <brain_agg_model_BertL4ACScore_V3_Exam1_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=BertL4ACScore_V3_Exam1</brain_agg_model_BertL4ACScore_V3_Exam1_node>
+                    <brain_agg_model_BertL4ACScore_V3_Exam2_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=BertL4ACScore_V3_Exam2</brain_agg_model_BertL4ACScore_V3_Exam2_node>
+                    <brain_agg_model_BertL4ACScore_V3_Exam3_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=BertL4ACScore_V3_Exam3</brain_agg_model_BertL4ACScore_V3_Exam3_node>
+                    <brain_agg_model_BertL4ACScore_V3_Exam4_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=BertL4ACScore_V3_Exam4</brain_agg_model_BertL4ACScore_V3_Exam4_node>
+
+                    <!-- qtc full volume config -->
+                    <brain_agg_model_QTC_EXAM_ONLINE_node>brain_agg_model_ufs/?_chain=ufs_app&amp;scene=agg_model_bucket&amp;chain=QTC_EXAM_ONLINE</brain_agg_model_QTC_EXAM_ONLINE_node>
+                    
+                    <qc_feature_node>qc_feature_bert/qc_minibert_model?_chain=QC_MINIBERT_ZEUS</qc_feature_node>
+                    <qc_feature_node_p100>qc_feature_bert_p100/qc_minibert_model?_chain=QC_MINIBERT_ZEUS</qc_feature_node_p100>
+                    <qc_feature_node_2080>qc_feature_bert_2080/qc_minibert_model?_chain=QC_MINIBERT_ZEUS</qc_feature_node_2080>
+
+                    <!-- qtc full volume config -->
+                    <qtc_feature_node_online_t4>qc_feature_bert/qtc_minibert_model?_chain=QTC_MINIBERT_ZEUS_ONLINE</qtc_feature_node_online_t4>
+                    <qtc_feature_node_online_p100>qc_feature_bert_p100/qtc_minibert_model?_chain=QTC_MINIBERT_ZEUS_ONLINE</qtc_feature_node_online_p100>
+                    <qtc_feature_node_online_2080>qc_feature_bert_2080/qtc_minibert_model?_chain=QTC_MINIBERT_ZEUS_ONLINE</qtc_feature_node_online_2080>
+
+                    <qc_score_cache_node>qc_score_cache</qc_score_cache_node>
+
+                    <brain_agg_feature_node>brain_agg_feature/?_chain=agg_feature_mix</brain_agg_feature_node>
+                    <brain_agg_feature_snapshot_node>brain_agg_feature_bucket/?_chain=agg_feature_mix_snapshot</brain_agg_feature_snapshot_node>
+                    <brain_agg_feature_mix_node>brain_agg_feature_bucket/?_chain=agg_feature_mix</brain_agg_feature_mix_node>
+                    <brain_agg_feature_mix_v2_stacking_part4_node>brain_agg_feature/?_chain=agg_feature_mix_v2_stacking_part4</brain_agg_feature_mix_v2_stacking_part4_node>
+
+                    <brain_agg_feature_bert_node>brain_agg_feature/?_chain=agg_feature_bert</brain_agg_feature_bert_node>
+                    <brain_agg_feature_bert_v2_node>brain_agg_feature_bucket/?_chain=agg_feature_bert_v2</brain_agg_feature_bert_v2_node>
+                    <brain_agg_feature_bert_v3_node>brain_agg_feature_bucket/?_chain=agg_feature_bert_v3</brain_agg_feature_bert_v3_node>
+                    <brain_agg_feature_bert_node_ufs>brain_agg_feature_ufs/?_chain=ufs_app&amp;scene=agg_feature&amp;chain=bert</brain_agg_feature_bert_node_ufs>
+                    <brain_agg_feature_bert_v2_node_ufs>brain_agg_feature_ufs/?_chain=ufs_app&amp;scene=agg_feature&amp;chain=bert_v2</brain_agg_feature_bert_v2_node_ufs>
+                    <brain_agg_feature_bert_v3_node_ufs>brain_agg_feature_ufs/?_chain=ufs_app&amp;scene=agg_feature&amp;chain=bert_v3</brain_agg_feature_bert_v3_node_ufs>
+
+                    <distinct_param>dist_key:V_HOST_HASH,dist_count:5;dist_key:V_HOST_HASH,dist_count:2</distinct_param>
+                    <sc_aol_node>sc_aol</sc_aol_node>
+                    <online_feature_output></online_feature_output>
+                </params>
+            </processor>
+            <processor name="exp_index_processor" module_name="agg_web2_module" class_name="ExpIndexProcessor">
+                <params>
+                    <!-- fetch summary mainbody -->
+                    <max_start_hit>50</max_start_hit>
+                    <fetch_count>100</fetch_count>
+                    <rule>
+                        phase1_node:query_log,phase2_node:query_log_summary,phase2_type:s3,profile:MainBodyProfile,keep_range_id:no,key_type:RAW_PK;phase1_node:mainindex,phase2_node:mainindex_summary,phase2_type:s3,profile:MainBodyProfile,keep_range_id:no,key_type:RAW_PK;phase1_node:rtindex,phase2_node:rtindex_summary,phase2_type:ha3,profile:MainBodyProfile;phase1_node:qaindex,phase2_node:qaindex_summary,phase2_type:s3,profile:MainBodyProfile,keep_range_id:no,key_type:RAW_PK;phase1_node:bigindex,phase2_node:bigindex_summary,phase2_type:s3,profile:MainBodyProfile,keep_range_id:no,key_type:RAW_PK;phase1_node:mainindex_at,phase2_node:mainindex_summary,phase2_type:s3,profile:MainBodyProfile,keep_range_id:no,key_type:RAW_PK
+                    </rule>
+                </params>
+            </processor>
+            <processor name="simdoc_processor" module_name="agg_web2_module" class_name="SimDocProcessor">
+                <params>
+                    <similar_doc_pair_node>similar_doc_pair</similar_doc_pair_node>
+                    <similar_doc_pair_offline_node>similar_doc_pair_offline</similar_doc_pair_offline_node>
+                </params>
+            </processor>
+
+            <processor name="qa_agg_processor" module_name="agg_web2_module" class_name="QaAggProcessor">
+                <params>
+                    <qa_agg_node>http/qa_agg</qa_agg_node>
+                </params>
+            </processor>
+            
+            <processor name="intention_processor" module_name="agg_web2_module" class_name="IntentionProcessor">
+                <params>
+                    <query_aol_node>query_aol/intention</query_aol_node>
+                    <content_intention_node>content_intention</content_intention_node>
+                </params>
+            </processor>
+
+            <processor name="medical_processor" module_name="agg_web2_module" class_name="MedicalProcessor">
+                <params>
+                    <medical_intention_server>medical_intention/classify</medical_intention_server>
+                    <medical_vertical_server>medical_vertical/agg</medical_vertical_server>
+                    <medical_rerank_model_server>ufs_agg_adjuster_model/?_chain=ufs_app&amp;scene=adjuster_medical&amp;chain=medical_rerank</medical_rerank_model_server>
+                    <medical_auth_rerank_model_server>ufs_agg_adjuster_model/?_chain=ufs_app&amp;scene=adjuster_medical&amp;chain=medical_auth_rerank</medical_auth_rerank_model_server>
+                </params>
+            </processor>
+
+            <processor name="sc_processor" module_name="agg_web2_module" class_name="ScProcessor">
+                <params>
+                    <max_start_hit>50</max_start_hit>
+                    <default_vendor>100002</default_vendor>
+                    <arbiter_node>arbiter</arbiter_node>
+                    <retrigger_arbiter_node>arbiter_retrigger</retrigger_arbiter_node>
+                    <sc_aol_node>sc_aol</sc_aol_node>
+                </params>
+            </processor>
+            
+            <processor name="querylog_processor" module_name="agg_web2_module" class_name="QueryLogProcessor">
+                <params>
+                    <baidu_querylog_node>baidu_querylog</baidu_querylog_node>
+                    <tt_querylog_node>tt_querylog</tt_querylog_node>
+                    <channels_clusters>
+                        mainindex:web_small_index:$(vip_cluster),$(galaxy_cluster);bigindex:web_big_index:$(bigindex_cluster);rtindex:web_rt_index:$(rtindex_cluster),$(fastindex_cluster);qaindex:web_qa_index:$(qaindex_cluster);mainindex_at:web_at_index:$(vip_cluster),$(galaxy_cluster)
+                    </channels_clusters>
+                    <insert_model_v2_node>querylog_model_ufs/?_chain=ufs_app&amp;scene=querylog_makeup&amp;chain=insert_model_v2</insert_model_v2_node>
+                </params>
+            </processor>
+
+            <processor name="recommend_web_processor" module_name="agg_web2_module" class_name="RecommendWebProcessor">
+                <params>
+                    <recommend_web_server>recommend_web/web</recommend_web_server>
+                </params>
+            </processor>
+
+            <processor name="rs_processor" module_name="agg_web2_module" class_name="RsProcessor">
+                <params>
+                    <rs_server>relative_search/aggpb</rs_server>
+                    <rs_union_server>relative_search/feedsearch</rs_union_server>
+                </params>
+            </processor>
+
+            <processor name="tag_rec_processor" module_name="agg_web2_module" class_name="TagRecProcessor">
+                <params>
+                    <tag_rec_server>related_tag_service</tag_rec_server>
+                </params>
+            </processor>
+
+            <processor name="novel_processor" module_name="agg_web2_module" class_name="NovelProcessor">
+                <params>
+                    <novel_update_server>novel_update</novel_update_server>
+                    <spl_server>zeus_agg_specific_logic/work</spl_server>
+                </params>
+            </processor>
+            
+            <processor name="sitelink_processor" module_name="agg_web2_module" class_name="SitelinkProcessor">
+                <params>
+                    <url_field>RawUrl,NormalizedUrl,OriUrl</url_field>
+                    <data>site_link</data>
+                    <bucket_data>bucket_1:site_link,bucket_2:site_link2,bucket_3:site_link3,bucket_4:site_link2</bucket_data>
+                </params>
+            </processor>
+
+            <processor name="timeliness_processor" module_name="agg_web2_module" class_name="TimelinessProcessor">
+                <params>
+                    <timeliness_server>timeliness/freshment</timeliness_server>
+                    <timeliness_rerank_model_server>ufs_agg_adjuster_model/?_chain=ufs_app&amp;scene=adjuster_timeliness&amp;chain=timeliness_predict</timeliness_rerank_model_server>
+                    <timeliness_trigger_model_server>ufs_agg_adjuster_model/?_chain=ufs_app&amp;scene=adjuster_timeliness&amp;chain=timeliness_trigger</timeliness_trigger_model_server>
+                </params>
+            </processor>
+
+            <processor name="feed_processor" module_name="agg_web2_module" class_name="FeedProcessor">
+                <params>
+                    <feed_replace_server>feed_replace/agg</feed_replace_server>
+                    <abcnn_server>feed_search_gpu_service/abcnn_trt</abcnn_server>
+                    <abcnn_feature_format_info>q_term_id_list@@#@@i_title_term_id_list@@#@@[dat]@@#@@=0:[[@@#@@]]</abcnn_feature_format_info>
+                    <distcnn_server>feed_search_cpu_service/distcnn</distcnn_server>
+                    <distcnn_feature_format_info>query@@#@@title_pos@@#@@[dat]@@#@@=0:@@#@@</distcnn_feature_format_info>
+                </params>
+            </processor>
+
+            <processor name="orion_processor" module_name="agg_web2_module" class_name="OrionProcessor">
+                <params>
+                    <cms_server>cms/cms/query_res</cms_server>
+                    <cms_host>$(cms_host)</cms_host>
+                    <cms_secret>$(cms_secret)</cms_secret>
+                    <filter_param>bucket,city,partner_id,prov,query_words,result_amount,sc,ts,uid,ver</filter_param>
+                </params>
+            </processor>
+
+            <processor name="authority_processor" module_name="agg_web2_module" class_name="AuthorityProcessor">
+                <params>
+                </params>
+            </processor>
+
+            <processor name="baike_processor" module_name="agg_web2_module" class_name="BaikeProcessor">
+                <params>
+                </params>
+            </processor>
+
+            <processor name="tieba_processor" module_name="agg_web2_module" class_name="TiebaProcessor">
+                <params>
+                </params>
+            </processor>
+
+            <processor name="special_host_processor" module_name="agg_web2_module" class_name="SpecialHostProcessor">
+                <params>
+                    <relevance_server>relevance_service</relevance_server>
+                </params>
+            </processor>
+
+            <processor name="internal_merge_processor" module_name="agg_web2_module" class_name="InternalMergeProcessor">
+                <params>
+                </params>
+            </processor>
+
+            <processor name="internal_rerank_processor" module_name="agg_web2_module" class_name="InternalRerankProcessor">
+                <params>
+                </params>
+            </processor>
+
+            <processor name="demote_processor" module_name="agg_web2_module" class_name="DemoteProcessor">
+                <params>
+                    <!-- demote qrsclause  -->
+                    <adult_demote_key>adult_demote</adult_demote_key>
+                    <political_demote_key>political_demote</political_demote_key>
+                    <adult_demote_shared_key>adult_demote_shared_key:no_adult</adult_demote_shared_key>
+                    <political_demote_shared_key>political_demote_shared_key:no_political</political_demote_shared_key>
+                    <cid_demote_rule>7:1</cid_demote_rule>
+
+                    <!-- sifter -->
+                    <sifter_node>sifter</sifter_node>
+                    
+                    <!-- sifter attribute -->
+                    <max_sifter_attribute_count>500</max_sifter_attribute_count>
+                    
+                    <!-- sifter summary -->
+                    <max_sifter_summary_count>50</max_sifter_summary_count>
+                    <max_start_hit>50</max_start_hit>
+                </params>
+            </processor>
+            
+            <processor name="dump_processor" module_name="agg_web2_module" class_name="DumpProcessor">
+                <params>
+                </params>
+            </processor>
+
+            <processor name="quark_processor" module_name="agg_web2_module" class_name="QuarkProcessor">
+                <params>
+                    <wenda_summary_server>wenda_summary</wenda_summary_server>
+                    <node_option>profile:WendaProfile,keep_range_id:no,key_type:RAW_PK</node_option>
+                </params>
+            </processor>
+
+            <processor name="summary_modify_processor" module_name="agg_web2_module" class_name="SummaryModifyProcessor">
+                <params>
+                    <summary_modify_server>summary_modify</summary_modify_server>
+                </params>
+            </processor>
+
+            <processor name="backup_processor" module_name="agg_web2_module" class_name="BackupProcessor">
+                <params>
+                </params>
+            </processor>
+
+            <processor name="external_merge_processor" module_name="agg_web2_module" class_name="ExternalMergeProcessor">
+                <params>
+                    <brain_agg_model_speck_adjust_node_ufs_v0525>spell_check_model_ufs/?_chain=ufs_app&amp;scene=speck&amp;chain=agg_speck_0525</brain_agg_model_speck_adjust_node_ufs_v0525>
+                    <brain_agg_model_speck_adjust_simple_node_ufs_v0525>spell_check_model_ufs/?_chain=ufs_app&amp;scene=speck&amp;chain=agg_speck_simple_0525</brain_agg_model_speck_adjust_simple_node_ufs_v0525>
+                </params>
+            </processor>
+            <processor name="qu_processor" module_name="agg_web2_module" class_name="QuProcessor">
+                <params>
+                    <qu_node>qu_node</qu_node>
+                    <chain>query_understanding</chain>
+                </params>
+            </processor>
+            <processor name="edu_opt_processor" module_name="agg_web2_module" class_name="EduOptProcessor">
+                <params>
+                </params>
+            </processor>
+            <processor name="dedup_processor" module_name="agg_web2_module" class_name="DedupProcessor">
+                <params>
+                </params>
+            </processor>
+
+            <processor name="filter_processor" module_name="agg_web2_module" class_name="FilterProcessor">
+                <params>
+                </params>
+            </processor>
+
+            <processor name="makeup_processor" module_name="agg_web2_module" class_name="MakeupProcessor">
+                <params>
+                    <makeup_server>makeup/operation</makeup_server>
+                </params>
+            </processor>
+
+            <processor name="post_processor" module_name="agg_web2_module" class_name="PostProcessor">
+                <params>
+                </params>
+            </processor>
+            <processor name="pan_demand_processor" module_name="agg_web2_module" class_name="PanDemandProcessor">
+                <params>
+                </params>
+            </processor>
+            <processor name="multi_tab_processor" module_name="agg_web2_module" class_name="MultiTabProcessor"> 
+                <params>
+                </params>
+            </processor>
+            <processor name="aggregator_processor" module_name="agg_web2_module" class_name="AggregatorProcessor">
+                <params>
+                    <upvote_tair_node>upvote</upvote_tair_node>
+                </params>
+            </processor>
+            <processor name="supplement_processor" module_name="agg_web2_module" class_name="SupplementProcessor">
+                <params>
+                    <max_start_hit>50</max_start_hit>
+                </params>
+            </processor>
+            <processor name="config_server_processor" module_name="agg_web2_module" class_name="ConfigServerProcessor">
+                <params>
+                    <config_server>config_server/web</config_server>
+                </params>
+            </processor>
+            <processor name="log_processor" module_name="agg_web2_module" class_name="LogProcessor">
+                <params>
+                    <remote_log_node>remote_log/third_party</remote_log_node>
+                    <remote_log_header>Host:backlog.sm.alibaba-inc.com</remote_log_header>
+                </params>
+            </processor>
+            <processor name="result_format_processor" module_name="agg_web2_module" class_name="ResultFormatProcessor">
+                <params>
+                </params>
+            </processor>
+            <processor name="latency_calculate_processor" module_name="agg_web2_module" class_name="LatencyCalculateProcessor">
+                <params>
+                    <session_latency_cache_hit_key>session_latency_cache_hit_in_default</session_latency_cache_hit_key>
+                    <session_latency_cache_miss_key>session_latency_cache_miss_in_default</session_latency_cache_miss_key>
+                    <session_latency_key>session_latency_in_default</session_latency_key>
+                </params>
+            </processor>
+        </processors>
+
+        <selectors>
+            <selector name="default_selector_1" module_name="" class_name="DefaultAppSelector">
+                <params>
+                    <app_name>agg_web</app_name>
+                </params>
+            </selector>
+            <selector name="qps_selector_simdoc" module_name="agg_web2_module" class_name="QpsSelector">
+                <params>
+                    <split_threshold_qps>300</split_threshold_qps>
+                    <limit_threshold_qps>350</limit_threshold_qps>
+                    <basic_app>agg_web_simdoc</basic_app>
+                    <degraded_app>agg_web_simdoc</degraded_app>
+                </params>
+            </selector>
+        </selectors>
+
+        <loaders>
+            <loader name="access_ctl_data_loader" module_name="a4_ns_plugin" class_name="AccessCtlDataLoader">
+                <params></params>
+            </loader>
+            <loader name="city_external_merge_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>CityExternalMergeData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="site_authority_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>SiteAuthorityData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="domain_authority_id_align_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>DomainAuthorityIdAlignData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="sc_config_loader" module_name="agg_web2_module" class_name="ScConfigLoader">
+                <params>
+                </params>
+            </loader>
+            <loader name="sc_rule_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>ScRuleData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="stopword_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>SetUserData</data_type>
+                    <data_param>type:string</data_param>
+                </params>
+            </loader>
+            <loader name="index_interleaving_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>IndexInterleavingData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="multi_site_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>MultiSiteData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="specifical_site_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>SpecificalSiteData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="intention_template_config_loader" module_name="agg_web2_module" class_name="IntentionTemplateConfigLoader">
+                <params>
+                </params>
+            </loader>
+            <loader name="timeliness_config_loader" module_name="agg_web2_module" class_name="TimelinessConfigLoader">
+                <params>
+                </params>
+            </loader>
+            <loader name="online_dedup_config_loader" module_name="agg_web2_module" class_name="OnlineDedupConfigLoader">
+                <params>
+                </params>
+            </loader>
+            <loader name="adjuster_config_loader" module_name="agg_web2_module" class_name="AdjusterConfigLoader">
+                <params>
+                </params>
+            </loader>
+            <loader name="sc_type_mapping_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>MapUserData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="type_sc_mapping_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>MapUserData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="sc_list_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>ScListData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="releate_sc_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>MapUserData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="type_cutoff_threshold_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>TypeCutoffThresholdData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="sc_cutoff_threshold_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>ScCutoffThresholdData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="agg_querylog_model_v2_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>Boosting</data_type>
+                    <data_param>type:gbdt</data_param>
+                </params>
+            </loader>
+            <loader name="gbdt_model_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>GbdtModel</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="gbrank_svm_model_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>GBRankSvmModel</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="entity_quality_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>EntityQualityData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="novel_pattern_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>PatternMatchData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="novel_adjust_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>SetUserData</data_type>
+                    <data_param>type:string</data_param>
+                </params>
+            </loader>
+            <loader name="novel_filter_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>SetUserData</data_type>
+                    <data_param>type:string</data_param>
+                </params>
+            </loader>
+            <loader name="sitelink_loader" module_name="agg_web2_module" class_name="SitelinkDictLoader">
+                <params>
+                </params>
+            </loader>
+            <loader name="general_timeliness_regex_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>GeneralTimelinessRegexData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="general_timeliness_term_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>GeneralTimelinessTermData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="lr_model_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>LrModelData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="kv_string_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>KvStringData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="wordid_mapping_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>WordIdMappingData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="idword_mapping_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>IdWordMappingData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="timeliness_site_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>TimelinessSiteData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="gbrank_svm_model_news_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>GBRankSvmModelNews</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="feed_makeup_stop_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>FeedMakeupStoper</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="feed_makeup_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>FeedMakeuper</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="host_icon_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>HostIconData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="site_aggregator_pattern_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>SiteAggregatorPatternData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="spread_makeup_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>SpreadMakeUpData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="domain_authority_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>DomainAuthorityData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="sc_dedup_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>ScDedupData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="url_dedup_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>UrlDedupData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="qc_bert_token_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>StringIntData</data_type>
+                    <data_param>type:string</data_param>
+                </params>
+            </loader>
+            <loader name="qc_term_weight_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>StringFloatData</data_type>
+                    <data_param>type:string</data_param>
+                </params>
+            </loader>
+            <loader name="qc_stop_word_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>SetUserData</data_type>
+                    <data_param>type:string</data_param>
+                </params>
+            </loader>
+            <loader name="xishuashua_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>XishuashuaData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="feed_tag_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>FeedTagData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="host_intention_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>HostIntentionData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="detail_intention_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>DetailIntentionData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="url_demote_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>UrlDemoteData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="host_weight_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>HostWeightData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="entity_recommend_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>EntityRecommendData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="entity_recommend_black_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>EntityRecommendBlackData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="entity_recommend_black_query_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>EntityRecommendBlackQueryData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="domain_quality_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>DomainQualityData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="novel_noncoop_url_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>NovelNoncoopUrlData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="timeliness_model_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>Boosting</data_type>
+                    <data_param>type:gbdt</data_param>
+                </params>
+            </loader>
+            <loader name="agg_qrclick_model_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>Boosting</data_type>
+                    <data_param>type:gbdt</data_param>
+                </params>
+            </loader>
+            <loader name="agg_querylog_model_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>Boosting</data_type>
+                    <data_param>type:gbdt</data_param>
+                </params>
+            </loader>
+            <loader name="agg_at_model_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>Boosting</data_type>
+                    <data_param>type:gbdt</data_param>
+                </params>
+            </loader>
+            <loader name="agg_tt_querylog_model_v1_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>Boosting</data_type>
+                    <data_param>type:gbdt</data_param>
+                </params>
+            </loader>
+            <loader name="agg_tt_querylog_model_v2_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>Boosting</data_type>
+                    <data_param>type:gbdt</data_param>
+                </params>
+            </loader>
+            <loader name="high_quality_host_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>HighQualityHostData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="url_pattern_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>UrlPatternData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="speed_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>SpeedData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <!-- TODO:next gbdt的loader统一成一个 -->
+            <loader name="news_host_quality_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>NewsHostQualityData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="edu_opt_data_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>EduOptData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+            <loader name="makeup_followup_loader" module_name="agg_web2_module" class_name="AggWebDataLoader">
+                <params>
+                    <data_type>MakeupFollowupData</data_type>
+                    <data_param></data_param>
+                </params>
+            </loader>
+        </loaders>
+
+        <loadbalances>
+            <loadbalance name="hash_strategy" module_name="" class_name="HashLoadBalanceStrategy"/>
+            <loadbalance name="rr_strategy" module_name="" class_name="RrLoadBalanceStrategy"/>
+            <loadbalance name="ns_rr_strategy" module_name="a4_ns_plugin" class_name="CmRrStrategy"/>
+            <loadbalance name="ns_hash_strategy" module_name="a4_ns_plugin" class_name="CmHashStrategy"/>
+        </loadbalances>
+
+    </plugin>
+
+    <nodes>
+        <node name="lbs" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(lbs_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(lbs)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="query_filter" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(query_filter_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(shield)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        <node name="result_filter" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(result_filter_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(shield)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="query_rewrite" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(query_rewrite_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(query_rewrite)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="uads" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(uads_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(uads)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="main_clickserver" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(main_clickserver_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(ha3_nest_click)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="qp" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qp_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(qp)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="mainindex" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(mainindex_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_mainindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="mainindex_at" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(mainindex_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_mainindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="mainindex_doc_pk" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(mainindex_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_mainindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="mainindex_summary" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(mainindex_summary_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(s3_mainindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="rtindex" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(rtindex_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_webrt)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="rtindex_summary" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(rtindex_summary_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_webrt)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="fastindex" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(rtindex_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_webrt)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="fastindex_summary" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(rtindex_summary_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_webrt)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="qaindex" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qaindex_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_qa_mainindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="qaindex_doc_pk" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qaindex_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_qa_mainindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="qaindex_summary" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qaindex_summary_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(s3_mainindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="bigindex" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(bigindex_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_bigindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="bigindex_doc_pk" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(bigindex_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(ha3_bigindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="bigindex_summary" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(bigindex_summary_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(s3_bigindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="qa_agg" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qa_agg_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(qa_agg)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="query_aol" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(query_aol_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(sc_aol_caculate)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+         
+        <node name="content_intention" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(content_intention_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="rr_strategy">
+                    <params>
+                    </params>
+                </lb_strategy>
+                <specs>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(content_intention_vip)</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(content_intention_vip)</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(content_intention_vip)</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(content_intention_vip)</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(content_intention_vip)</spec>
+                    <spec group="1" weight="1" max_fails="10" fail_timeout="10000">$(content_intention_vip)</spec>
+                </specs>
+            </upstream>
+        </node>
+
+        <node name="medical_intention" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(medical_intention_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(medical_intention)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="medical_vertical" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(medical_vertical_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(medical_vertical)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="arbiter" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(arbiter_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(arbiter)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="retrigger_arbiter" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(arbiter_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(arbiter)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="sc_aol" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(sc_aol_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(sc_aol_caculate)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="recommend_web" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(recommend_web_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(recommend_web)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="relative_search" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(relative_search_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(relative_search)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="zeus_agg_specific_logic" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(zeus_agg_specific_logic_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(zeus_agg_specific_logic)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="timeliness" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(timeliness_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(timeliness)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="ufs_agg_adjuster_model" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(ufs_agg_adjuster_model_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(ufs_agg_adjuster_model)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="feed_replace" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(feed_replace_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(feed_replace)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="feed_search_gpu_service" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(feed_search_gpu_service_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(feed_search_gpu_service)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="feed_search_cpu_service" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(feed_search_cpu_service_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(feed_search_cpu_service)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="cms" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(cms_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(cms)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="related_tag_service" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(related_tag_service_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(related_tag_service)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="relevance_service" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(relevance_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(relevance)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="sifter" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(sifter_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(sifter)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="wenda_summary" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(wenda_summary_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(s3_mainindex)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="summary_modify" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(summary_modify_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(summary_modify)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="makeup" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(makeup_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(makeup)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="config_server" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(config_server_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(config_server)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="brain_agg_model_ufs" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(zeus_ufs_app_agg_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(zeus_ufs_app_agg)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="qc_feature_bert" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qc_feature_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(zeus_qc_feature_bert)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="qc_feature_bert_p100" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qc_feature_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(zeus_qc_feature_bert_p100)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="qc_feature_bert_2080" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qc_feature_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(zeus_qc_feature_bert_2080)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="brain_agg_feature" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(zeus_agg_feature_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(zeus_agg_feature)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="brain_agg_feature_bucket" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(zeus_agg_feature_bucket_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(zeus_agg_feature_bucket)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="brain_agg_feature_ufs" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(zeus_agg_feature_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(zeus_agg_feature_ufs)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="spell_check_model_ufs" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(zeus_ufs_app_spell_check_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(zeus_ufs_app_spell_check)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+        
+        <node name="qu_node" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(qu_node_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_hash_strategy">
+                    <params>
+                        <name>$(qu_node_ns)</name>
+                        <interval>5000</interval>
+                        <hash_key>hash</hash_key>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="querylog_model_ufs" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(zeus_ufs_app_querylog_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="ns_rr_strategy">
+                    <params>
+                        <name>$(zeus_ufs_app_querylog)</name>
+                        <interval>5000</interval>
+                    </params>
+                </lb_strategy>
+            </upstream>
+        </node>
+
+        <node name="remote_log" type="http">
+            <conn_pool_size>$(conn_pool_size)</conn_pool_size>
+            <timeout>$(remote_log_timeout)</timeout>
+            <max_qps>0</max_qps>
+            <upstream>
+                <lb_strategy name="rr_strategy">
+                    <params>
+                    </params>
+                </lb_strategy>
+                <specs>
+                    <spec group="1" weight="2" max_fails="30" fail_timeout="10000">backlog.sm.alibaba-inc.com:80</spec>
+                    <spec group="1" weight="2" max_fails="30" fail_timeout="10000">backlog.sm.alibaba-inc.com:80</spec>
+                    <spec group="1" weight="2" max_fails="30" fail_timeout="10000">backlog.sm.alibaba-inc.com:80</spec>
+                    <spec group="1" weight="2" max_fails="30" fail_timeout="10000">backlog.sm.alibaba-inc.com:80</spec>
+                    <spec group="1" weight="2" max_fails="30" fail_timeout="10000">backlog.sm.alibaba-inc.com:80</spec>
+                    <spec group="1" weight="2" max_fails="30" fail_timeout="10000">backlog.sm.alibaba-inc.com:80</spec>
+                </specs>
+            </upstream>
+        </node>
+        
+        
+
+        <!-- tair cache  -->
+        <node name="baidu_querylog" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>172800</effective_time>
+            <port>$(baidu_querylog_tair_port)</port>
+            <group>$(baidu_querylog_tair_group)</group>
+            <area>$(baidu_querylog_tair_area)</area>
+            <master>$(baidu_querylog_tair_master)</master>
+            <slave>$(baidu_querylog_tair_slave)</slave>
+            <log_path>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/logs/a4_agg_quarkchat/baidu_querylog_tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+
+        <node name="tt_querylog" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>172800</effective_time>
+            <port>$(tt_querylog_tair_port)</port>
+            <group>$(tt_querylog_tair_group)</group>
+            <area>$(tt_querylog_tair_area)</area>
+            <master>$(tt_querylog_tair_master)</master>
+            <slave>$(tt_querylog_tair_slave)</slave>
+            <log_path>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/logs/a4_agg_quarkchat/tt_querylog_tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+        
+        <node name="querylog_cache" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>43200</effective_time>
+            <port>$(querylog_cache_tair_port)</port>
+            <group>$(querylog_cache_tair_group)</group>
+            <area>$(querylog_cache_tair_area)</area>
+            <master>$(querylog_cache_tair_master)</master>
+            <slave>$(querylog_cache_tair_slave)</slave>
+            <log_path>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/logs/a4_agg_quarkchat/querylog_cache_tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+        
+        <node name="rt_clickserver" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>$(rt_clickserver_effective_time)</effective_time>
+            <port>$(rt_clickserver_tair_port)</port>
+            <group>$(rt_clickserver_tair_group)</group>
+            <area>$(rt_clickserver_tair_area)</area>
+            <master>$(rt_clickserver_tair_master)</master>
+            <slave>$(rt_clickserver_tair_slave)</slave>
+            <log_path>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/logs/a4_agg_quarkchat/rt_clickserver_tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+        
+        <node name="novel_update" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>864000</effective_time>
+            <port>$(novel_update_tair_port)</port>
+            <group>$(novel_update_tair_group)</group>
+            <area>$(novel_update_tair_area)</area>
+            <master>$(novel_update_tair_master)</master>
+            <slave>$(novel_update_tair_slave)</slave>
+            <log_path>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/logs/a4_agg_quarkchat/novel_update_tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+
+        <node name="qc_score_cache" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>$(qc_score_cache_effective_time)</effective_time>
+            <port>$(qc_score_cache_tair_port)</port>
+            <group>$(qc_score_cache_tair_group)</group>
+            <area>$(qc_score_cache_tair_area)</area>
+            <master>$(qc_score_cache_tair_master)</master>
+            <slave>$(qc_score_cache_tair_slave)</slave>
+            <log_path>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/logs/a4_agg_quarkchat/qc_score_cache_tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+        
+        <node name="similar_doc_pair" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>172800</effective_time>
+            <port>$(similar_doc_pair_tair_port)</port>
+            <group>$(similar_doc_pair_tair_group)</group>
+            <area>$(similar_doc_pair_tair_area)</area>
+            <master>$(similar_doc_pair_tair_master)</master>
+            <slave>$(similar_doc_pair_tair_slave)</slave>
+            <log_path>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/logs/a4_agg_quarkchat/similar_doc_pair_tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+
+        <node name="similar_doc_pair_offline" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>172800</effective_time>
+            <port>$(similar_doc_pair_offline_tair_port)</port>
+            <group>$(similar_doc_pair_offline_tair_group)</group>
+            <area>$(similar_doc_pair_offline_tair_area)</area>
+            <master>$(similar_doc_pair_offline_tair_master)</master>
+            <slave>$(similar_doc_pair_offline_tair_slave)</slave>
+            <log_path>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/logs/a4_agg_quarkchat/similar_doc_pair_offline_tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+
+        <node name="upvote" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>0</effective_time>
+            <port>$(usefull_tair_port)</port>
+            <group>$(usefull_tair_group)</group>
+            <area>$(usefull_tair_area)</area>
+            <master>$(usefull_tair_master)</master>
+            <slave>$(usefull_tair_slave)</slave>
+            <log_path>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/logs/a4_agg_quarkchat/usefull_tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+
+        <node name="official_site_dict" type="tair">
+            <timeout>$(tair_timeout)</timeout>
+            <effective_time>$(official_site_dict_tair_effective_time)</effective_time>
+            <port>$(official_site_dict_tair_port)</port>
+            <group>$(official_site_dict_tair_group)</group>
+            <area>$(official_site_dict_tair_area)</area>
+            <master>$(official_site_dict_tair_master)</master>
+            <slave>$(official_site_dict_tair_slave)</slave>
+            <log_path>/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new_base/logs/a4_agg_quarkchat/tair.log</log_path>
+            <log_level>warn</log_level>
+        </node>
+
+    </nodes>
+
+    <datas>
+        <data name="index_interleaving_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/index_interleaving.json" loader="index_interleaving_loader" update_interval="0"/>
+        <data name="stopword" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/stopword.dat" loader="stopword_data_loader" update_interval="0"/>
+        <data name="city_external_merge" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/city_external_merge_data.dat" loader="city_external_merge_data_loader" update_interval="0"/>
+        <data name="site_authority" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/site_timeliness_authority.dat" loader="site_authority_data_loader" update_interval="0"/>
+        <data name="domain_authority" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/domain_authority.dat" loader="domain_authority_data_loader" update_interval="0"/>
+        <data name="domain_authority_new" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/domain_authority_new.dat" loader="domain_authority_data_loader" update_interval="0"/>
+        <data name="domain_authority_id_align" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/qc_pi_align.dat" loader="domain_authority_id_align_data_loader" update_interval="0"/>
+        <data name="domain_authority_id_align_new" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/qc_pi_align_new.dat" loader="domain_authority_id_align_data_loader" update_interval="0"/>
+        <data name="domain_authority_id_align_2" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/qc_pi_align_timeliness_authority.dat" loader="domain_authority_id_align_data_loader" update_interval="0"/>
+        <data name="sc_config" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/sc.conf" loader="sc_config_loader" update_interval="0"/>
+        <data name="sc_wenda_evade_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data//sc_wenda_evade.txt" loader="sc_rule_data_loader" update_interval="0"/>
+        <data name="multi_site" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/host.dat" loader="multi_site_data_loader" update_interval="0"/>
+        <data name="news_site" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/newshost.dat" loader="specifical_site_data_loader" update_interval="0"/>
+        <data name="adult_site" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/adulthost.dat" loader="specifical_site_data_loader" update_interval="0"/>
+        <data name="bbs_site" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data//bbshost.dat" loader="specifical_site_data_loader" update_interval="0"/>
+        <data name="mobile_friendly_site" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/mobilehost.dat" loader="specifical_site_data_loader" update_interval="0"/>
+        <data name="intention_template_config" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/intention_template.conf" loader="intention_template_config_loader" update_interval="0"/>
+        <data name="timeliness_config" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/timeliness.conf" loader="timeliness_config_loader" update_interval="0"/>
+        <data name="multi_online_dedup_config" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/multi_online_dedup_v2.conf" loader="online_dedup_config_loader" update_interval="0"/>
+        <data name="adjuster_config" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/adjuster.conf" loader="adjuster_config_loader" update_interval="0"/>
+        <data name="sc_type_mapping_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/sc_type_mapping.dat" loader="sc_type_mapping_data_loader" update_interval="0"/>
+        <data name="type_sc_mapping_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/type_sc_mapping.dat" loader="type_sc_mapping_data_loader" update_interval="0"/>
+        <data name="sc_list_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/sc_list.dat" loader="sc_list_data_loader" update_interval="0"/>
+        <data name="releate_sc_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/releate_sc.dat" loader="releate_sc_data_loader" update_interval="0"/>
+        <data name="type_cutoff_threshold_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/type_cutoff_threshold.dat" loader="type_cutoff_threshold_data_loader" update_interval="0"/>
+        <data name="sc_cutoff_threshold_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/sc_cutoff_threshold.dat" loader="sc_cutoff_threshold_data_loader" update_interval="0"/>
+        <data name="querylog_model_v2" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/querylog_v2.model" loader="agg_querylog_model_v2_loader" update_interval="0"/>
+        <data name="news_type_classification_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/news_type_classification_model.dat" loader="gbdt_model_loader" update_interval="0"/>
+        <data name="rtindex_merge_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/rtindex_merge_model.dat" loader="gbrank_svm_model_loader" update_interval="0"/>
+        <data name="entity_quality" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/entity_quality.data" loader="entity_quality_data_loader" update_interval="0"/>
+        <data name="novel_pattern_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/novel_pattern.dat" loader="novel_pattern_data_loader" update_interval="0"/>
+        <data name="novel_adjust_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/application_257.data" loader="novel_adjust_data_loader" update_interval="0"/>
+        <data name="novel_filter_host" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/application_314.data" loader="novel_filter_data_loader" update_interval="0"/>
+        <data name="site_link" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/wap.sitelink.in" loader="sitelink_loader" update_interval="0"/>
+        <data name="site_link2" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/wap.sitelink.in.2" loader="sitelink_loader" update_interval="0"/>
+        <data name="site_link3" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/wap.sitelink.in.3" loader="sitelink_loader" update_interval="0"/>
+        <data name="general_timeliness_regex" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/general_timeliness_regex.dat" loader="general_timeliness_regex_loader" update_interval="0"/>
+        <data name="general_timeliness_term" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/general_timeliness_term.dat" loader="general_timeliness_term_loader" update_interval="0"/>
+        <data name="lr_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/lr_model.data" loader="lr_model_data_loader" update_interval="0"/>
+        <data name="sc_to_qcate_dict" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/sc_to_qcate.dict" loader="kv_string_data_loader" update_interval="0"/>
+        <data name="uc_cate_to_qcate_dict" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/uc_cate_to_qcate.dict" loader="kv_string_data_loader" update_interval="0"/>
+        <data name="feed_wordid_100w" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/word_id_mapping_100w" loader="wordid_mapping_data_loader" update_interval="0"/>
+        <data name="feed_wordid_100w_reverse" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/word_id_mapping_100w" loader="idword_mapping_data_loader" update_interval="0"/>
+        <data name="feed_wordid_stopword" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/word_id_mapping_stopword" loader="idword_mapping_data_loader" update_interval="0"/>
+        <data name="timeliness_site" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/timeliness_site.dat" loader="timeliness_site_data_loader" update_interval="0"/>
+        <data name="rtindex_merge_model_news" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/news_rerank.dat" loader="gbrank_svm_model_news_loader" update_interval="0"/>
+        <data name="feed_makeup_stop_dict" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/feed_del" loader="feed_makeup_stop_loader" update_interval="0"/>
+        <data name="feed_makeup_dict" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/feed_top" loader="feed_makeup_loader" update_interval="0"/>
+        <data name="host_icon" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/host_icon.data" loader="host_icon_data_loader" update_interval="0"/>
+        <data name="site_aggregator_pattern" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/application_2860.data" loader="site_aggregator_pattern_loader" update_interval="0"/>
+        <data name="spread_makeup" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/spread_makeup.dat" loader="spread_makeup_data_loader" update_interval="0"/>
+        <data name="sc_dedup" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/scdedup.dat" loader="sc_dedup_data_loader" update_interval="0"/>
+        <data name="url_dedup" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/application_748.data" loader="url_dedup_data_loader" update_interval="0"/>
+        <data name="qc_bert_token" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/bert_word_map" loader="qc_bert_token_loader" update_interval="0"/>
+        <data name="qc_term_weight" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/muda_qp_word_count_idf.dat.slim" loader="qc_term_weight_loader" update_interval="0"/>
+        <data name="qc_stop_word" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/stop_word.txt" loader="qc_stop_word_loader" update_interval="0"/>
+        <data name="news_host_quality_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/news_host_quality_data" loader="news_host_quality_data_loader" update_interval="0"/>
+        <data name="edu_opt_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data//edu_opt_data" loader="edu_opt_data_loader" update_interval="0"/>
+        <data name="makeup_followup" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/application_3339.data" loader="makeup_followup_loader" update_interval="0"/>
+
+        <!-- 应该不再使用的数据, 后续逐步考虑删除 -->
+        <data name="xishuashua_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/xishuashua.dat" loader="xishuashua_loader" update_interval="0"/>
+        <data name="feed_tag_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/query_tag_only_reco_feed_data" loader="feed_tag_loader" update_interval="0"/>
+        <data name="host_intention" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/host_intention.dat" loader="host_intention_data_loader" update_interval="0"/>
+        <data name="detail_intention" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/detail_intention.dat" loader="detail_intention_data_loader" update_interval="0"/>
+        <data name="url_demote" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/click_badcase.dat" loader="url_demote_data_loader" update_interval="0"/>
+        <data name="host_weight" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/host_weight_new.dat" loader="host_weight_data_loader" update_interval="0"/>
+        <data name="entity_recommend" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/entity_recommend_new.data" loader="entity_recommend_data_loader" update_interval="0"/>
+        <data name="entity_recommend_black" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/entity_recommend_black.data" loader="entity_recommend_black_data_loader" update_interval="0"/>
+        <data name="entity_recommend_black_query" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/entity_recommend_black_query.data" loader="entity_recommend_black_query_data_loader" update_interval="0"/>
+        <data name="domain_quality" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/domain_quality.dat" loader="domain_quality_data_loader" update_interval="0"/>
+        <data name="novel_noncoop_url" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/novel_noncoop_url.dat" loader="novel_noncoop_url_data_loader" update_interval="0"/>
+        <data name="timeliness_trigger_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/timeliness_trigger.model" loader="timeliness_model_loader" update_interval="0"/>
+        <data name="timeliness_trigger_model_new" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/timeliness_trigger.model.new" loader="timeliness_model_loader" update_interval="0"/>
+        <data name="timeliness_rerank_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/timeliness_new_rerank.model" loader="timeliness_model_loader" update_interval="0"/>
+        <data name="timeliness_rerank_model_new" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/timeliness_new_rerank.model.new" loader="timeliness_model_loader" update_interval="0"/>
+        <data name="auth_trigger_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/auth_trigger.model" loader="timeliness_model_loader" update_interval="0"/>
+        <data name="auth_rerank_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/auth_rerank.model" loader="timeliness_model_loader" update_interval="0"/>
+        <data name="medical_rerank_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/med_rerank_2.model" loader="timeliness_model_loader" update_interval="0"/>
+        <data name="medical_auth_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/med_auth_rerank_4.model" loader="timeliness_model_loader" update_interval="0"/>
+        <data name="agg_qrclick_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/agg_qrclick.model" loader="agg_qrclick_model_loader" update_interval="0"/>
+        <data name="querylog_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/querylog.model" loader="agg_querylog_model_loader" update_interval="0"/>
+        <data name="at_model" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/at_v1.model" loader="agg_at_model_loader" update_interval="0"/>
+        <data name="tt_querylog_model_v1" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/tt_querylog_v1.model" loader="agg_tt_querylog_model_v1_loader" update_interval="0"/>
+        <data name="tt_querylog_model_v2" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/tt_querylog_v2.model" loader="agg_tt_querylog_model_v2_loader" update_interval="0"/>
+        <data name="political_news_site" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/political_news_site.dat" loader="stopword_data_loader" update_interval="0"/>
+        <data name="high_quality_host" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/high_quality_host.dat" loader="high_quality_host_loader" update_interval="0"/>
+        <data name="url_pattern" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/url_pattern.dat" loader="url_pattern_loader" update_interval="0"/>
+        <data name="speed_data" path="/apsarapangu/disk1/xonline_runtime/agg_web_installroot_new/var/a4_agg_quarkchat/data/application_2030.data" loader="speed_data_loader" update_interval="0"/>
+    </datas>
+
+    <apps>
+        <app name="agg_web">
+            <phase name="1">
+                <processor name="request_parse_processor" method=""/>
+                <processor name="geo_info_processor" method=""/>
+                <processor name="query_filter_processor" method=""/>
+            </phase>
+            <phase name="2">
+                <processor name="query_rewrite_processor" method="request"/>
+                <processor name="identity_processor" method="request_uads"/>
+                <processor name="query_rewrite_processor" method="get_result"/>
+                <processor name="click_feedback_processor" method="trigger_with_basic"/>
+                <processor name="query_analysis_processor" method="qp_rerank" desc="访问QP"/>
+                <processor name="qu_signal_processor" method="request" desc="请求qu"/>
+                <processor name="querylog_processor" method="trigger"/>
+                <processor name="intention_processor" method="trigger"/>
+                <processor name="timeliness_processor" method="trigger" desc="触发请求时效性服务"/>
+                <processor name="medical_processor" method="request_intention"/>
+                <processor name="identity_processor" method="get_uads_result"/>
+                <processor name="click_feedback_processor" method="trigger"/>
+                <processor name="intention_processor" method="search"/>
+                <processor name="medical_processor" method="process_intention"/>
+                <processor name="timeliness_processor" method="search" desc="获取时效性服务结果"/>
+                <processor name="qu_signal_processor" method="get" desc="获取qu返回结果"/>
+                <processor name="qa_agg_processor" method="search"/>
+                <processor name="query_analysis_processor" method="recheck_query_location" desc=""/>
+                <processor name="medical_processor" method="request_vertical"/>
+                <processor name="sc_processor" method="trigger_with_arbiter" desc="请求Arbiter-sc"/>
+                <processor name="tag_rec_processor" method="request_tag_rec" desc="触发请求tag_rec请求"/>
+                <processor name="rs_processor" method="request_rs" desc="触发请求RelativeSearch"/>
+                <processor name="makeup_processor" method="request" desc="触发请求Makeup"/>
+                <processor name="recommend_web_processor" method="request_recommend" desc="触发请求NormandyAgg"/>
+                <processor name="demote_processor" method="demote_before_index" desc="涉黄涉证打压"/>
+            </phase>
+            <phase name="3">
+                <processor name="index_processor" method="gen_qrs_clause"/>
+                <processor name="intention_recall_processor" method="extend"/>
+                <!--processor name="index_processor" method="read_cache"/-->
+                <processor name="index_processor" method="request_index"/>
+                <processor name="simdoc_processor" method="fetch_simdoc"/>
+                <processor name="index_processor" method="basic_rerank"/>
+                <!--processor name="special_host_processor" method="backup" desc="特殊站点Hit备份"/-->
+                <processor name="demote_processor" method="sifter_attribute" desc="sifter过滤"/>
+                <processor name="dump_processor" method="random_shuffle_qrs" desc="L3Dump时随机打乱AttributeQrsHit顺序"/>
+                <processor name="index_processor" method="fetch_summary" desc="获取摘要"/>
+                <processor name="exp_index_processor" method="fetch_summary_mainbody" desc="实验逻辑, 获取摘要"/>
+                <processor name="sc_processor" method="trigger_with_sc_aol" desc="请求ScAol"/>
+                <processor name="sc_processor" method="search_with_sc_aol" desc="获取ScAol结果"/>
+                <processor name="index_processor" method="senior_rerank" desc="SeniorRerank"/>
+                <!--processor name="index_processor" method="update_cache" desc="更新Cache"/-->
+            </phase>
+            <phase name="4">
+                <processor name="quark_processor" method="fetch_summary" desc="Quark获取问答摘要"/>
+                <processor name="feed_processor" method="request_feed_replace" desc="触发请求FeedReplace"/>
+                <processor name="summary_modify_processor" method="request" desc="触发请求SummaryModify"/>
+                <processor name="summary_modify_processor" method="get_and_modify" desc="获取SummaryModify结果并调整SumamryQrsHit"/>
+                <processor name="sc_processor" method="search_with_arbiter" desc="获取Aribiter-sc结果"/>
+                <processor name="rs_processor" method="get_rs" desc="获取RelativeSearch推荐结果"/>
+                <processor name="tag_rec_processor" method="get_tag_rec" desc="获取tag_rec推荐结果"/>
+                <processor name="backup_processor" method="split_backup" desc="将backupHits从SummaryQrsHitQueue中剥离"/>
+                <processor name="sc_processor" method="retrigger_with_arbiter" desc="二次请求Arbiter-sc"/>
+                <processor name="sc_processor" method="research_with_arbiter" desc="获取二次请求Arbiter-sc结果"/>
+                <processor name="demote_processor" method="sifter_over_5_pages" desc="5页之后请求结果sifter过滤"/>
+                <processor name="orion_processor" method="request" desc="触发请求投放orion-cms服务"/>
+                
+                <processor name="internal_merge_processor" method="merge_qrs" desc="队列内合并" />
+                <processor name="timeliness_processor" method="internal_rerank" desc="队列内合并时调整时效性结果"/>
+                <processor name="internal_merge_processor" method="merge_sc" desc="队列内合并" />
+                <processor name="sc_processor" method="internal_rerank" desc="队列内合并时调整Sc结果"/>
+                <processor name="baike_processor" method="internal_rerank" desc="队列内合并时调整baike结果"/>
+                <processor name="tieba_processor" method="internal_rerank" desc="队列内合并并调整tieba结果"/>
+                <processor name="sc_processor" method="internal_rerank_step2" desc="队列内合并时调整Sc结果"/>
+                <processor name="internal_rerank_processor" method="internal_rerank" desc="队列内合并时的Rerank逻辑"/>
+                <processor name="novel_processor" method="internal_rerank" desc="队列内合并时调整小说结果"/>
+                <processor name="internal_merge_processor" method="merge_retrigger_sc" desc="merge二查的sc结果"/>
+                <processor name="internal_merge_processor" method="merge_extend" desc="merge意图扩展"/>
+
+                <processor name="demote_processor" method="sifter_summary" desc="sifter过滤"/>
+
+                <processor name="click_feedback_processor" method="internal_final_rerank" desc="队列内点调"/>
+                
+                <processor name="special_host_processor" method="sync_req_relevance" desc="Relevance模型预测"/>
+                <processor name="baike_processor" method="internal_final_rerank" desc="队列内百科调整"/>
+                <processor name="tieba_processor" method="internal_final_rerank" desc="队列内贴吧调整"/>
+                <processor name="timeliness_processor" method="internal_final_rerank" desc="队列内时效性调整"/>
+                <processor name="internal_rerank_processor" method="internal_final_rerank_step1" desc="队列内RerankStep1"/>
+                <processor name="authority_processor" method="internal_final_rerank" desc="队列内权威性调整"/>
+                <processor name="medical_processor" method="internal_final_rerank" desc="队列内医疗调整"/>
+                <processor name="internal_rerank_processor" method="internal_final_rerank_step2" desc="队列内RerankStep2"/>
+                <processor name="novel_processor" method="internal_final_rerank" desc="队列内小说调整"/>
+                <processor name="internal_rerank_processor" method="internal_final_rerank_step3" desc="队列内RerankStep3"/>
+                <processor name="click_feedback_processor" method="internal_final_rerank_navi" desc="官网点调"/>
+                <processor name="sc_processor" method="internal_final_rerank" desc="队列内sc调整"/>
+                <processor name="internal_rerank_processor" method="internal_final_rerank_step4" desc="队列内RerankStep4"/>
+                <processor name="timeliness_processor" method="internal_final_rerank_step2" desc="队列内时效性调整Step2"/>
+                <processor name="internal_rerank_processor" method="internal_final_rerank_step5" desc="队列内RerankStep5"/>
+                <processor name="special_host_processor" method="internal_final_rerank" desc="队列内特殊站点调整"/>
+            </phase>
+            <phase name="5">
+                <processor name="external_merge_processor" method="" desc="多队列合并"/>
+                <processor name="novel_processor" method="request_spl" desc="触发请求小说SPL"/>
+                <processor name="novel_processor" method="process_spl" desc="获取SPL结果并Rerank"/>
+                <processor name="orion_processor" method="get" desc="获取投放orion-cms结果"/>
+                <processor name="video_processor" method="merge_video" desc="合并并调整UGC-Video推荐结果"/>
+                <processor name="feed_processor" method="feed_replace" desc="获取并替换Feed结果"/>
+                <processor name="feed_processor" method="feed_merge" desc="合并Feed-HQC结果"/>
+                <processor name="feed_processor" method="request_abcnn" desc="Abcnn模型预测"/>
+                <processor name="feed_processor" method="request_distcnn" desc="Distcnn模型预测"/>
+                <processor name="click_feedback_processor" method="rank_with_basic"/>
+                <processor name="querylog_processor" method="makeup"/>
+                <processor name="feed_processor" method="cutoff" desc="FeedCutOff, 获取ABCNN和DISTCNN分数并对Feed结果截断调整"/>
+                <processor name="dedup_processor" method="external_distinct" desc="自然结果DedupByHost"/>
+                <processor name="filter_processor" method="external_filter" desc="结果过滤"/>
+                <processor name="novel_processor" method="external_filter" desc="小说结果过滤"/>
+                <processor name="medical_processor" method="external_filter" desc="医疗结果过滤"/>
+                <processor name="sc_processor" method="external_filter" desc="SC结果过滤"/>
+                <processor name="sc_processor" method="external_rerank" desc="队列外ScRerank"/>
+                <processor name="authority_processor" method="external_rerank" desc="权威性调整,原makeup_process.AdjustAuthority()"/>
+                <processor name="makeup_processor" method="get_and_insert_result" desc="获取并插入Makeup数据,原makeup_process.InsertMakeUpResult()"/>
+                <processor name="click_feedback_processor" method="adjust_by_nav_click" desc="调整NavUrl位置,原makeup_process.AdjustByNavClick()"/>
+                <processor name="makeup_processor" method="rerank_makeup_result" desc="调整Makeup数据位置,原makeup_process.AdjustMakeUpPos()"/>
+                <processor name="sc_processor" method="newshot_dedup_in_makeup" desc="DedupByNewsHot,原makeup_process.DedupByNewsHot()"/>
+                <processor name="novel_processor" method="rerank_in_makeup" desc="小说站点屏蔽 makeupS5,原makeup_process.AdjustForNovelEmergency()"/>
+                <processor name="medical_processor" method="external_rerank" desc="MedicalExternalRerank makeupS6,原makeup_process.AdjustMedical()"/>
+                <processor name="baike_processor" method="rerank_with_makeup" desc="原MakeUp中Baike调整 makeupS7,原makeup_process.AdjustBaike()"/>
+                <processor name="tieba_processor" method="adjust_in_makeup" desc="SecurityLevel调整,原makeup_process.TitleAdjust()"/>
+                <processor name="special_host_processor" method="rerank_in_makeup" desc="原MakeUp中Xyst调整 makeupS8,原makeup_process.XystAdjust()"/>
+                <processor name="sc_processor" method="dedup_after_makeup" desc="ScDedup ScRemoveAdjust,原makeup_process.ScRemoveAdjust()"/>
+                <processor name="pan_demand_processor" method="" desc="娱乐盘点, 暂时没地方放, 后续归结到biz/nav中"/>
+                <processor name="multi_tab_processor" method="" des="MultiTab"/>
+                <processor name="querylog_processor" method="qlog_makeup" desc="原QlogMakeupProcessor"/>
+                <processor name="aggregator_processor" method="" desc="聚合"/>
+                <processor name="timeliness_processor" method="external_rerank" desc="时效性调整"/>
+                <processor name="qa_agg_processor" method="rank" desc="获取QA结果并排序"/>
+                <processor name="intention_processor" method="multi_intention"/>
+                <processor name="medical_processor" method="process_vertical" desc="合并并Rerank医疗结果"/>
+                <processor name="dedup_processor" method="external_dedup" desc="主队列Hit去重"/>
+                <processor name="sc_processor" method="check_nav_sc" desc="nav-sc调整到首位"/>
+            </phase>
+            <phase name="6">
+                <processor name="supplement_processor" method="recyle_deleted_hits" desc="重新召回DeletedHits,扩容结果"/>
+                <processor name="sc_processor" method="sc_pos_dedup" desc="sc结果去重"/>
+                <processor name="baike_processor" method="rerank_with_recyle" desc="百科结果去重"/>
+                <processor name="config_server_processor" method="" desc="访问ConfigServer"/>                
+                <processor name="sitelink_processor" method="sitelink" desc="Sitelink"/>
+                <processor name="feed_processor" method="rerank" desc="Feed-Final-Rerank"/>
+                
+                <processor name="simdoc_processor" method="replace_simdoc" desc="替换baidu结果"/>
+                <processor name="supplement_processor" method="truncate_final_hits" desc="截断FinalQueue"/>
+                <processor name="result_filter_processor" method="" desc="网页结果封禁过滤"/>
+
+                <processor name="recommend_web_processor" method="rerank" desc="合并并调整NormandyAgg推荐结果"/>
+                <processor name="edu_opt_processor" method="" desc="教育相关"/>
+                <processor name="post_processor" method="" desc="最后的Adjust/Dedup/Filter处理"/>
+            </phase>
+            <phase name="7">
+                <processor name="log_processor" method="" desc="display/local/remote日志处理"/>
+                <processor name="result_format_processor" method=""/>
+                <processor name="latency_calculate_processor" method="" desc="latency指标统计"/>
+            </phase>
+        </app>
+       </apps>
+
+    <locations>
+        <location name="/agg" selector="default_selector_1"/>
+    </locations>
+</A4>
+

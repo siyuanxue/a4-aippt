@@ -1,0 +1,96 @@
+# agg_web2
+port=24878
+cm_zk_spec=smzk-sourth.vip.tbsite.net:2181
+cm_zk_path=/cm_server
+cm_zk_timeout=10
+ip_limit_rule=allow * 
+local_ip=$(local_ip)
+thread_count_interleaving=32
+conn_pool_size=300
+tair_timeout=40
+deploy_env=em21
+
+## llm node
+general_llm=model-proxy_pub6
+general_llm_timeout=20000
+agg_web_server=agg-ea134.vip.tbsite.net:80
+agg_web_timeout=5000
+knowledge_server=agg-knowledge_pub6
+knowledge_server_timeout=2500
+news_server=news_uchq
+news_server_timeout=1500
+qt_model=ts-agg-server
+qt_model_timeout=1000
+intent_model=query-knowledge-clf-service_pub6
+intent_model_timeout=1000
+ae_model=answer-extraction-service_pub6
+ae_model_timeout=1000
+al_model=quarkl-s2-answer-locate-1216
+al_model_timeout=1000
+qd_correlation_model=query-doc-pair-score-request
+qd_correlation_model_timeout=1000
+knowledge_grade_model=pa-knowledge-grade-ranking
+knowledge_grade_model_timeout=1000
+general_llm_sync_node=general_llm/v1/completions
+
+qp=qp_pub6
+qp_timeout=1000
+qlog_index=ha3_sgs-gaokao-qq-material
+sgs_index=ha3_sgs-gaokao-recall
+
+# academic正文
+xueshu_index=ha3_ra-llms-academic-text
+llm_emb_model=rallms-doc2emb-qwen2
+llm_emb_model_l3=quarkl3-academic-0930
+llm_recall_model=ra-llms-academic-vector-search-proxy
+ha3_feature=ha3_ra-llms-academic-feature
+
+# abstract题录
+academic_note_index=ha3_ra-llms-academic-abstract-text
+llm_note_eve_model=ra-llms-academic-abstract-qd-vector-search-proxy
+
+#pr node
+llm_pr_model=quarkl3-s32-pr.zeus.vipserver:36510
+
+## index
+aigc_index=ha3_qa-good-aigc
+gaokao_index=ha3_sgs-gaokao
+ha3_mainindex=ha3_mainindex
+s3_mainindex=s3_mainindex
+
+gaokao_intent_service=sgs-gaokao-intent-service
+gaokao_llm_service=model-proxy_test
+
+#model
+query_intent_llm_model_new=quarkm-l2-searchqa-intent-0722
+rewrite_llm_model=quarkl-l2-query-rewrite-0827
+rewrite_llm_model_new=quarkl-l2-query-rewrite-0827
+single_rewrite_llm_name=quarkl-l8-uniquery-rewrite-1024
+answer_locate_llm_name=quarkl-s2-answer-locate-1216
+ai_vendor=shenma_ai
+llm_max_history_size=20
+llm_api_key=Bearer jbRasXPovAkJTa2o9JtaLGn0
+
+## session tair
+session_tair_effective_time=600
+session_tair_port=5200
+session_tair_group=group_quark_em21_mdb
+session_tair_area=9590
+session_tair_master=quark-em21-mdb-cs1.alibaba-inc.com
+session_tair_slave=quark-em21-mdb-cs2.alibaba-inc.com
+
+# bypass
+control_bypass_link=empty_link
+
+#amonitor
+amonitor_service_name=a4_agg_quarkchat
+amonitor_agent_port=10086
+#utrace采样配置, 不要改动
+utrace_switch=off
+utrace_header=no
+utrace_agent_ip=11.92.133.13
+utrace_rpc_port=55680
+utrace_config_port=56789
+utrace_app_service=a4-agg-quarkchat
+utrace_sample_ratio=1
+utrace_trace_service=umon-trace-example-C

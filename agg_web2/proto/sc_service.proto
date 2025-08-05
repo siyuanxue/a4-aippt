@@ -1,0 +1,38 @@
+import "agg2/proto/basic_defs.proto";
+import "agg2/proto/qp_collector.proto";
+import "agg2/common/arbiter/arbiter.proto";
+import "agg2/common/cache/cache.proto";
+
+package A4.AGG.proto;
+
+message PBHit
+{
+    optional uint32 hitType = 1;
+    optional arbiter.ScResult scResult = 2;
+    optional cache.PBCacheHit cacheHit = 3;
+}
+
+message PBHitQueue
+{
+    optional string name = 1;
+    repeated PBHit  hits = 2;
+}
+
+message KStringMap
+{
+    optional string name = 1;
+    repeated KStringPair elems = 2;
+}
+
+message ScRequest
+{
+    repeated KStringPair requestParams = 1;
+    optional QpCollector qpCollector = 2;
+    repeated PBHitQueue  pbHitQueues = 3;
+}
+
+message ScResult
+{
+    repeated PBHitQueue pbHitQueues  = 1;
+    repeated KStringMap pbGeneralMap = 2;
+}

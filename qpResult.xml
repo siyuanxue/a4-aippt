@@ -1,0 +1,13 @@
+<qpResult class_id="0" tracking_level="0" version="1">
+	<px class_id="1" tracking_level="1" version="0" object_id="_0">
+		<Result class_id="2" tracking_level="1" version="0" object_id="_1">
+			<Serializable class_id="3" tracking_level="1" version="0" object_id="_2"></Serializable>
+			<mBody></mBody>
+		</Result>
+		<mTp></mTp>
+		<mQpHitVec class_id="4" tracking_level="0" version="0">
+			<count>0</count>
+			<item_version>0</item_version>
+		</mQpHitVec>
+	</px>
+</qpResult>

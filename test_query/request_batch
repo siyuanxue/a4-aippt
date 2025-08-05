@@ -1,0 +1,17 @@
+sess=`openssl rand -base64 12`
+reqid=`openssl rand -base64 12`
+
+port=56781
+
+function run()
+{
+    uid=jinru.yjr
+    curl "http://11.180.61.211:"${port}"/agg" -H 'Accept:text/event-stream' -d '{"version":1,"target":"request","communication":{"uid":"'${uid}'","sessionid":"'${sess}'","reqid":"'${reqid}'","resid":0},"data":{"message":{"query":"'${1}'","status":"init"}},"bucket":{"llmplan":2,"llmrewrite":"4","llmcachewrite":"1"},"error_code":0,"error_msg":"","timestamp":"1682390791"}'
+}
+
+for q in `cat batch_query`
+do
+    run $q
+    echo '-----------------------------------'
+done
+

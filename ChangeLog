@@ -1,0 +1,11 @@
+1.5.1-rc3 ly102215@alibaba-inc.com
+	* add sc mutex dedup
+1.5.3-rc1 ly102215@alibaba-inc.com
+	* post Merge Features to RemoteLog
+1.5.13-rc1 ly102215@alibaba-inc.com
+	* agg_web add ut
+1.5.14-rc3 ly102215@alibaba-inc.com
+	* news aggregate 
+	* lbs retry
+	* online_clickserver use cm2
+

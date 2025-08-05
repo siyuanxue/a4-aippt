@@ -1,0 +1,5 @@
+set(BUILDDIR ${CMAKE_CURRENT_BINARY_DIR})
+configure_file(test.h.in ${CMAKE_CURRENT_SOURCE_DIR}/test.h)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} cpps)
+add_library(test_main SHARED ${cpps})
+target_link_libraries(test_main cppunit alog) 

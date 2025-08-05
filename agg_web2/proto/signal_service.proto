@@ -1,0 +1,16 @@
+import "agg2/proto/basic_defs.proto";
+import "agg2/proto/qp_collector.proto";
+import "agg_web2/proto/user_format_data.proto";
+
+package A4.AGG.proto;
+
+message SignalRequest
+{
+repeated KStringPair requestParams = 1;
+}
+
+message SignalResult
+{
+optional QpCollector qp_collector = 1;
+optional UserFormatInfoMap user_format_info = 2;
+}

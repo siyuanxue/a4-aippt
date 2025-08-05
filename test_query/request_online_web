@@ -1,0 +1,15 @@
+sess=`openssl rand -base64 12`
+
+function run()
+{
+    ab=`python get_ab.py`
+    uid=jinru.yjr
+    ipport=33.52.44.224:25857
+    #ipport=11.180.61.211:56781
+    curl "http://${ipport}/agg" -H 'Accept:text/event-stream' -d '{"version":1,"target":"request","communication":{"uid":"'${uid}'","debug":"1","sessionid":"'${sess}'","reqid":"282f7cf5-0680-446f-b8db-5cc5dfb14550","resid":0},"data":{"message":{"query":"'${1}'","status":"init"}},"bucket":'$ab',"error_code":0,"error_msg":"","timestamp":"1682390791"}'
+}
+
+set -x
+
+run 区块链技术应用的前景和风险
+

@@ -1,0 +1,7 @@
+# -*- mode: python -*-
+import os
+
+Import('env')
+env = env.Clone()
+
+env.aDuplicate('logger.conf')

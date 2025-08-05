@@ -1,0 +1,9 @@
+#ifndef A4_AGG_WEB_TEST_H
+#define A4_AGG_WEB_TEST_H
+
+#define BUILDDIR "@BUILDDIR@"
+#define TOP_BUILDDIR "@TOP_BUILDDIR@"
+#define TEST_DATA_PATH "@TOP_SRCDIR@/agg_web2_testdata/"
+#define DOTEST_LOGGER_CONF "@DOTEST_LOGGER_CONF@"
+
+#endif //A4_AGG_WEB_TEST_H

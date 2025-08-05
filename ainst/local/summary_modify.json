@@ -1,0 +1,285 @@
+{
+    "gig_config": {
+        "connection_config": {
+            "http": {
+                "queue_size": 1,
+                "thread_num": 300
+            }, 
+            "arpc": {
+                "queue_size": 1000, 
+                "thread_num": 1
+            }, 
+            "tcp": {
+                "queue_size": 1000, 
+                "thread_num": 1
+            }
+        }, 
+        "subscribe_config": {
+            "local": [
+                {
+                    "biz_name": "ha3_bigindex",
+                    "range": {
+                        "from": 0,
+                        "to": 1
+                    },
+                    "version": "0",
+                    "weight": 100,
+                    "ip": "11.251.200.28",
+                    "tcp_port": 10007,
+                    "http_port": 10007
+                },
+                {
+                    "biz_name": "arbiter",
+                    "range": {
+                        "from": 0,
+                        "to": 1
+                    },
+                    "version": "0",
+                    "weight": 100,
+                    "ip": "11.251.179.206",
+                    "tcp_port": 8114,
+                    "http_port": 8114
+                }
+            ],
+            "cm2": {
+                "zk_host": "zk.alibaba-inc.com:80",
+                "zk_path": "/cm_server_test2",
+                "cm2_part": [
+                    ],
+                "cm2_part_no_topo_info": [
+                    "uads",
+                    "xonline_agg_query_rewrite_base",
+                    "xonline_qp_web_base",
+                    "agg_zzd_search_perf_proxy",
+                    "xonline_orion_base",
+                    "recommend_web",
+                    "relative_search",
+                    "sc_aol_caculate",
+                    "a4_summary_modify"
+                    ],
+                "cm2_group": [
+                    ],
+                "enable_wings": false,
+                "consider_cm2_health": true
+            }
+        }, 
+        "misc_config": {
+            "consistent_hash_virtual_point": 2000, 
+            "weight_update_step": 0.5, 
+            "snapshot_log_count": 100
+        }
+    }, 
+    "default_timeout": 500,
+    "flow_config": {
+        "uads": {
+            "flow_control_config": {
+                "begin_degrade_latency": 100,
+                "full_degrade_latency": 200,
+                "latency_upper_limit_ms": 10, 
+                "latency_upper_limit_percent": 1.0,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 300
+        }, 
+        "bigindex": {
+            "flow_control_config": {
+                "begin_degrade_latency": 200,
+                "full_degrade_latency": 400,
+                "latency_upper_limit_ms": 15,
+                "latency_upper_limit_percent": 0.4,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "arbiter": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "query_rewrite": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "qp": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "feed": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "orion": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "recommend_web": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "relative_search": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "sc_aol": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "zeus_agg_specific_logic": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "summary_modify": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "timeliness": {
+            "flow_control_config": {
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500,
+                "latency_upper_limit_ms": 20,
+                "latency_upper_limit_percent": 0.2,
+                "probe_percent": 0.05, 
+                "et_wait_time_factor": 1000, 
+                "et_trigger_percent": 1.0, 
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "et_min_wait_time": 1000
+            },
+            "timeout": 500
+        },
+        "default": {
+            "flow_control_config": {
+                "et_wait_time_factor": 1000, 
+                "latency_upper_limit_ms": 10000000,
+                "et_trigger_percent": 1.0,
+                "probe_percent": 0.05,
+                "retry_wait_time_factor": 1000,
+                "retry_trigger_percent": 1.0,
+                "latency_upper_limit_percent": 10000000.0,
+                "et_min_wait_time": 1000,
+                "begin_degrade_latency": 300,
+                "full_degrade_latency": 500
+            }, 
+            "timeout": 500
+        }
+    }
+}

@@ -1,0 +1,14 @@
+package A4.AGG.proto;
+message SubtopicInfo
+{
+optional string index = 1;
+optional double score = 2;
+repeated string qlist = 3;
+repeated string ulist = 4;
+repeated string sclist = 5;
+optional string ex = 6;
+}
+message SubtopicInfoVec
+{
+repeated SubtopicInfo elems = 1;
+}

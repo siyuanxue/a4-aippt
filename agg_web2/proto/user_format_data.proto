@@ -1,0 +1,60 @@
+import "agg2/proto/basic_defs.proto";
+
+package A4.AGG.proto;
+
+message UserFormatBase
+{
+required string name = 1;
+required string owner = 2;
+required string desc = 3;
+required string detail_desc = 4;
+required sint64 pos_weight = 5;
+}
+
+message UserFormatDataList
+{
+required UserFormatBase base = 1;
+required string sep = 2;
+required string colume_name = 3;
+required sint64 colume_num = 4;
+repeated bytes  list_data = 5;
+}
+
+message UfddData 
+{
+required string key = 1;
+required string value = 2;
+required string desc = 3;
+required sint64 pos_weight = 4;
+}
+
+message UserFormatDataDict
+{
+required UserFormatBase base = 1;
+repeated UfddData dict_data = 2; 
+}
+
+message UserFormatDataSingle
+{
+required UserFormatBase base = 1;
+required string single_data = 2;
+required string feature_class = 3;
+}
+
+message UserFormatPos
+{
+required sint64 area = 1;
+required sint64 level = 2;
+required string sub_url = 3;
+}
+
+message UserFormatPair
+{
+required UserFormatPos format_pos = 1;
+repeated Variant format_vec = 2;
+}
+
+message UserFormatInfoMap
+{
+repeated UserFormatPair user_format_info = 1;
+}

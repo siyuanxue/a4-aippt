@@ -1,0 +1,18 @@
+package A4.AGG.proto;
+message OfficialInfo
+{
+required string mNormalizedUrl = 1;
+required string mCertainty = 2;
+required uint32 mIntention = 3;
+required string mSources = 4;
+required double mAnchor = 5;
+required sint64 mValueCnt = 6;
+required double mKkCtr = 7;
+required sint64 mKkVpt = 8;
+required sint64 mKkClk = 9;
+required uint32 mIdx = 10;
+}
+message OfficialInfoVec
+{
+repeated OfficialInfo elems = 1;
+}

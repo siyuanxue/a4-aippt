@@ -1,0 +1,31 @@
+import "agg2/proto/basic_defs.proto";
+import "agg2/proto/qp_collector.proto";
+import "agg2/common/cache/cache.proto";
+
+package A4.AGG.proto;
+
+message PBQrsHit
+{
+    optional uint32 hitType = 1;
+    optional cache.PBCacheHit cacheHit = 2;
+}
+
+message PBQrsHitQueue
+{
+    required string name = 1;
+    required string type = 2;
+    repeated PBQrsHit hit = 3;
+    repeated KStringPair qrsClauseMap = 4;
+}
+
+message RecallRequest
+{
+    repeated KStringPair requestParams = 1;
+    optional QpCollector qpCollector = 2;
+}
+
+message RecallResult
+{
+    repeated PBQrsHitQueue pbHitQueues = 1;
+    optional QpCollector qpCollector = 2;
+}

@@ -1,0 +1,43 @@
+<sbench>
+    <common>
+        <server>11.251.199.180:9999</server>
+        <client_count>20</client_count>
+        <qps>50</qps>
+        <!-- <log_file>/dev/null</log_file> -->
+        <!-- <statistics_format>json</statistics_format> -->
+        <stop_condition>
+            <total_time>180</total_time>
+            <!-- <total_query>100000</total_query> -->
+        </stop_condition>
+    </common>
+    <stress>
+        <http>
+            <method>GET</method>
+            <threshold>
+                <timeout>1000</timeout>
+            </threshold>
+            <!-- <post_location>/</post_location> -->
+            <versions>
+                <version weight="1">HTTP_V10</version>
+                <version weight="1">HTTP_V11</version>
+            </versions>
+            <headers>
+                <!-- <header type="file">/path/to/your/file</header> -->
+                <header type="raw">User-Agent:sbench</header>
+            </headers>
+            <query_file>/tmp/test_queries</query_file>
+            <!-- <verifier>agg_response_verfier</verifier> -->
+        </http>
+    </stress>
+    <!-- 
+    <plugins>
+        <plugin name="agg_response_verifier" type="verifier" path="/path/to/your/plugin">
+            <params>
+                <key1>value1</key1>
+                <key2>value2</key2>
+            </params>
+        </plugin>
+    </plugins> -->
+</sbench>
+
+

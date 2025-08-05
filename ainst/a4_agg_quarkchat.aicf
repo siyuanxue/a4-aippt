@@ -1,0 +1,36 @@
+config /conf/a4_agg_quarkchat/a4_agg_quarkchat_conf.xml expand
+#config /conf/a4_agg_quarkchat/a4_agg_web_test_conf.xml expand
+config /conf/a4_agg_quarkchat/alog.conf expand
+config /conf/a4_agg_quarkchat/agg_quarkchat_data.conf expand
+config /conf/a4_agg_quarkchat/agg_quarkchat_data_update.conf expand
+
+# agg_web1
+#config /conf/a4_agg_quarkchat/agg_web1/ns_params.xml expand
+#config /conf/a4_agg_quarkchat/agg_web1/modules.xml expand
+#config /conf/a4_agg_quarkchat/agg_web1/processors.xml expand
+#config /conf/a4_agg_quarkchat/agg_web1/loaders.xml expand
+#config /conf/a4_agg_quarkchat/agg_web1/selectors.xml expand
+#config /conf/a4_agg_quarkchat/agg_web1/datas.xml expand
+#config /conf/a4_agg_quarkchat/agg_web1/nodes.xml expand
+#config /conf/a4_agg_quarkchat/agg_web1/apps.xml expand
+#config /conf/a4_agg_quarkchat/agg_web1/locations.xml expand
+
+set cm_timeout 5
+
+# 正式上线时 port要与ude应用保持一致
+#set port 9092
+set test_thread_count 5
+#set amonitor_service_name a4_agg_web
+#set amonitor_agent_port 10086
+
+#crontab
+crontab */1 * * * * python $AINST__INSTALLROOT/bin/data_checker update -c $AINST__INSTALLROOT/conf/a4_agg_quarkchat/agg_quarkchat_data_update.conf
+#docker crontab
+#config /conf/a4_agg_quarkchat/crontab.conf
+
+
+script start sh $AINST__INSTALLROOT/bin/start_a4_agg_quarkchat.sh $AINST__INSTALLROOT 
+script stop $AINST__INSTALLROOT/bin/a4_agg_tool stop -c $AINST__INSTALLROOT/conf/a4_agg_quarkchat/a4_agg_quarkchat_conf.xml
+script reload sh $AINST__INSTALLROOT/bin/reload_a4_agg_quarkchat.sh $AINST__INSTALLROOT
+
+autostart off

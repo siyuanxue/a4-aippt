@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <larmmi a="aa" b="bb">aabb</larmmi>
+  <node>node1</node>
+  <node>node2</node>
+  <node>node3</node>
+  <vivian>
+    <node1>1</node1>
+    <node2>2</node2>
+    <node3>3</node3>
+  </vivian>
+</root>

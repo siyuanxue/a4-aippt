@@ -1,0 +1,20 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+
+#env.aDirs('test')
+
+cpps = Glob('*.cpp')
+cpps += env.aDirs('web_agg')
+cpps += env.aDirs('qt')
+cpps += env.aDirs('risk')
+cpps += env.aDirs('intent')
+cpps += env.aDirs('ae')
+cpps += env.aDirs('qdoc_correlation')
+cpps += env.aDirs('knowledge')
+cpps += env.aDirs('knowledge_grade')
+cpps += env.aDirs('common')
+cpps += env.aDirs('qc')
+
+Return(['cpps'])

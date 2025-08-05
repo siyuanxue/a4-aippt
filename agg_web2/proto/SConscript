@@ -1,0 +1,19 @@
+# -*- mode: python -*-
+import os, sys
+Import('env')
+env = env.Clone()
+#env.aDirs("test")
+pb_official = env.aCompileProto('official_info.proto')
+pb_querylog_info = env.aCompileProto('querylog_info.proto')
+pb_subtopic_info = env.aCompileProto('subtopic_info.proto')
+pb_sc_service = env.aCompileProto('sc_service.proto')
+pb_signal = env.aCompileProto('signal_service.proto')
+pb_qp_results = env.aCompileProto('qp_results.proto')
+pb_recall = env.aCompileProto('recall_service.proto')
+pb_user_format_data = env.aCompileProto('user_format_data.proto')
+pb_tf_format_data = env.aCompileProto('tf_response.proto')
+pb_source = (pb_official + pb_querylog_info + pb_subtopic_info + pb_signal + pb_qp_results + pb_sc_service + pb_recall + pb_user_format_data+pb_tf_format_data)
+
+cpps = Glob('*.cpp')
+cpps += pb_source
+Return(['cpps'])

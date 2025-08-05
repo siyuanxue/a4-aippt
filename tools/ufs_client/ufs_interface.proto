@@ -1,0 +1,138 @@
+import "matrix_feature.proto";
+
+package A8.ufs_client.proto.ufs.interface;
+
+// KVPair 不允许key为空值, value可以是空值
+message KVPair {
+    required string key = 1;
+    optional string value = 2;
+}
+
+enum FeatureValueType {
+    BOOL = 0;
+    INT = 1;
+    DOUBLE = 2;
+    STRING = 3;
+    
+    // For Extend
+    EXTEND_TYPE_1 = 4;   // For matrix_feature
+    EXTEND_TYPE_2 = 5;
+    EXTEND_TYPE_3 = 6;
+    EXTEND_TYPE_4 = 7;
+    EXTEND_TYPE_5 = 8;
+    EXTEND_TYPE_6 = 9;
+    EXTEND_TYPE_7 = 10;
+    EXTEND_TYPE_8 = 11;
+}
+
+// DISABLE: 无trace
+// FATAL, ERROR, WARN: 预留, 后期扩展用
+// INFO: Global trace
+// DEBUG: 所有trace
+enum TraceLevel {
+    DISABLE = 0;
+    FATAL = 1;
+    ERROR = 2;
+    WARN = 3;
+    INFO = 4;
+    DEBUG = 5;
+}
+
+enum Format {
+    DENSE = 1;          // 稠密存储方式
+    SPARSE = 2;         // 稀疏存储方式
+    
+    // For Extend
+    EXTEND_FORMAT_1 = 3;       // 预留
+    EXTEND_FORMAT_2 = 4;       // 预留
+    EXTEND_FORMAT_3 = 5;       // 预留
+}
+
+// 稠密矩阵存储
+message Feature {
+    optional string name = 1;
+    required FeatureValueType value_type = 2;
+    optional bool bool_value = 3;
+    optional sint64 int_value = 4;
+    optional double double_value = 5;
+    optional string string_value = 6;
+    optional A8.ufs_client.proto.feature.Matrix matrix_value = 7;  // 适用于Request, 用于发送高纬特征
+    
+    // 适用于Response, 将高纬特征转成json字符串存放于该字段中
+    // 主要是考虑到后期可能的matrix结构升级问题
+    optional string str_matrix_value = 8;
+}
+
+message DenseRecordItem {
+    optional string id = 1;
+    repeated KVPair params = 2;
+    repeated Feature features = 3;
+}
+
+message DenseBatch {
+    repeated DenseRecordItem record_items = 1;
+}
+
+// 稀疏矩阵存储
+message SparseRecordItem {
+    optional string id = 1;
+    repeated KVPair params = 2;
+    repeated bool bool_values = 3;
+    repeated sint64 int_values = 4;
+    repeated double double_values = 5;
+    repeated string string_values = 6;
+    repeated A8.ufs_client.proto.feature.Matrix matrix_values = 7;
+}
+
+message SparseBatch {
+    repeated string feature_names = 1;
+    repeated FeatureValueType value_types = 2;
+    repeated SparseRecordItem record_items = 3;
+}
+
+// common features
+message CommonFeatures {
+    repeated string feature_names = 1;
+    repeated FeatureValueType value_types = 2;
+    repeated bool bool_values = 3;
+    repeated sint64 int_values = 4;
+    repeated double double_values = 5;
+    repeated string string_values = 6;
+    repeated A8.ufs_client.proto.feature.Matrix matrix_values = 7;
+}
+
+// Request
+message Request {
+    repeated KVPair params = 1;
+    optional TraceLevel trace_level = 2;
+
+    optional CommonFeatures common_features = 3;
+
+    // format = DENSE, 用dense_batch存储
+    // format = SPARSE, 用sparse_batch存储
+    optional Format format = 4;
+    optional DenseBatch dense_batch = 5;
+    optional SparseBatch sparse_batch = 6;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// 每个Record的处理结果
+message RecordResult {
+    optional string id = 1;
+    repeated Feature features = 2;
+}
+
+// Trace结构
+message Trace {
+    repeated KVPair global = 1;
+    repeated KVPair nodes = 2;
+}
+
+// Response
+message Response {
+    optional sint32 code = 1;
+    repeated KVPair infos = 2;
+    repeated RecordResult record_results = 3;
+    optional string err_msg = 4;
+    optional Trace trace = 5; 
+}

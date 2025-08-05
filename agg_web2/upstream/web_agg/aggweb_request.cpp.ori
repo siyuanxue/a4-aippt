@@ -1,0 +1,98 @@
+#include <agg_web2/upstream/web_agg/aggweb_request.h>
+#include <sutil/net/url_util.h>
+#include <sutil/net/url.h>
+#include <agg2/util/string_tool.h>
+
+AGG_BEGIN_NAMESPACE(agg_web2);
+AGG_LOG_SETUP(common, AggWebRequest);
+
+BEGIN_DEFINE_SERIALIZATION_FUNC(AggWebRequest){
+    ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(HttpRequest);
+} END_DEFINE_SERIALIZATION_FUNC(AggWebRequest)
+
+
+AggWebRequest::AggWebRequest() : mAggContext(nullptr)
+{
+    SetHttpMethod(HM_GET);  // 默认Arbiter为Get请求
+}
+
+AggWebRequest::AggWebRequest(AggContext *aggContext, const std::string& query)
+    : mAggContext(aggContext)
+    , mQuery(query)
+{
+    SetHttpMethod(HM_GET);  // 默认Arbiter为Get请求
+}
+
+AggWebRequest::~AggWebRequest()
+{
+
+}
+
+void ReplaceBucket(std::string& bucket, const std::string& exp1, const std::string& exp2, const std::string& exp)
+{
+    if (bucket.find(exp1 + "%3D" + exp2) != std::string::npos) {
+        bucket = StringTool::ReplaceStr(bucket, exp1 + "%3D" + exp2, exp);
+    } else if (bucket.find(exp1 + "=" + exp2) != std::string::npos) {
+        bucket = StringTool::ReplaceStr(bucket, exp1 + "=" + exp2, exp);
+    } else if (bucket.find(exp1 + "=") != std::string::npos) {
+        // pass
+    } else {
+        bucket += "&" + exp;
+    }
+}
+
+bool AggWebRequest::DoEncode(std::string & uriQuery, std::string & body, String2String & headers)
+{
+    if (mAggContext == NULL) {
+        AGG_LOG(ERROR, "mAggContext is null");
+        return false;
+    }
+    headers["Content-Type"] = "x-www-form-urlencoded";
+    headers["User-Agent"] = "curl/7.29.0";
+    headers["Host"] = mHost;
+    headers["Accept"] = "*/*";
+    String2String params;
+    auto iter = mAggContext->BeginRequestParam();
+    for (; iter != mAggContext->EndRequestParam(); iter++) {
+        params.insert(make_pair(iter->first,iter->second));
+    }
+
+    if (params.find("bucket") != params.end()) {
+        AGG_LOG(ERROR, "bucket=%s", params["bucket"].c_str());
+        string bucket = params["bucket"];
+        ReplaceBucket(bucket, "grj_paral_qclassify", "grj_paral_nointeract_repre", "grj_paral_qclassify=no");
+        ReplaceBucket(bucket, "jxwd_deep_kse", "on2", "jxwd_deep_kse=on2_10");
+        ReplaceBucket(bucket, "jxwd_deep_kse", "base", "jxwd_deep_kse=on2_10");
+        ReplaceBucket(bucket, "piaofang_sc", "on", "piaofang_sc=on");
+        ReplaceBucket(bucket, "ab_feed_agg_return_ori_body", "yes", "ab_feed_agg_return_ori_body=yes"); // news_uchq
+        ReplaceBucket(bucket, "ab_feed_agg_skip_cache_read", "1", "ab_feed_agg_skip_cache_read=1");
+        params["bucket"] = bucket;
+        AGG_LOG(ERROR, "bucket=%s", params["bucket"].c_str());
+    } else {
+        params["bucket"] = "grj_paral_qclassify=no&jxwd_deep_kse=on2_10&ab_feed_agg_return_ori_body=yes&ab_feed_agg_skip_cache_read=1";
+    }
+
+    params["osr"]="searchqa_gaokao";
+    params["sessclose"]="1";
+    params["hit"]="20";
+    params.erase("debug"); // 去除debug
+    params["from"]="kkframenew";
+    params["buck_mode"]="close_interleaving_and_fix_max";
+    params["belong"]="quark";
+    params["ad"]="no";
+    params["query"]=mQuery;
+
+    string ecnodeParam;
+    if (!sutil::net::UrlUtil::Encode(params,ecnodeParam)) {
+        AGG_LOG(ERROR,"params Encode error");
+        return false;
+    }
+    uriQuery = ecnodeParam;
+    mAggRequestStr = uriQuery;
+    AGG_LOG(ERROR,"agg request:[%s]", uriQuery.c_str());
+    return true;
+}
+
+AGG_END_NAMESPACE(agg_web2);
+BOOST_CLASS_EXPORT_IMPLEMENT(AGG_NS(agg_web2)::AggWebRequest);
+

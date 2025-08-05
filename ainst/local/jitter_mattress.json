@@ -1,0 +1,22 @@
+{
+    "access_thread_number": 10,
+    "filling_up_interval_time": 0,
+    "retry_wait_time": 850,
+    "layer_config":
+    [
+        {
+            "expiration_time": 10,
+            "flush_buffer_size": 16777216,
+            "max_key_size": 1024,
+            "max_value_size": 10485760,
+            "type": "memory",
+            "max_total_size": 314572800,
+            "evict_ratio": 0.05
+        }
+    ],
+    "metric":{
+        "type":"amon",
+        "node_path":"Cache"
+    }
+}
+

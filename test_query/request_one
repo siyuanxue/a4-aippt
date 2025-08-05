@@ -1,0 +1,12 @@
+function run()
+{
+    ab=`python get_ab.py`
+    sess=`openssl rand -base64 12`
+    uid=jinru.yjr
+    curl "http://11.180.61.211:56781/agg" -H 'Accept:text/event-stream' -d '{"version":1,"target":"request","communication":{"uid":"'${uid}'","sessionid":"'${sess}'","reqid":"282f7cf5-0680-446f-b8db-5cc5dfb14550","resid":0},"data":{"message":{"query":"'${1}'","status":"init"}},"bucket":'$ab',"error_code":0,"error_msg":"","timestamp":"1682390791","debug": "1"}'
+}
+
+
+set -x
+
+run $1

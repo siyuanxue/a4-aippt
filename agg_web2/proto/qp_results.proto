@@ -1,0 +1,7 @@
+package A4.AGG.proto;
+import "agg2/common/qp/qp.proto";
+
+message QpResultVec
+{
+repeated A4.AGG.proto.qp.Output elems = 1;
+}

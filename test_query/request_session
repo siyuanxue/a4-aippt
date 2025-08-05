@@ -1,0 +1,23 @@
+sess=`openssl rand -base64 12`
+
+function run()
+{
+    uid=jinru.yjr
+    curl "http://11.180.61.211:56781/agg" -H 'Accept:text/event-stream' -d '{"version":1,"target":"request","communication":{"uid":"'${uid}'","sessionid":"'${sess}'","reqid":"282f7cf5-0680-446f-b8db-5cc5dfb14550","resid":0},"data":{"message":{"query":"'${1}'","status":"init"}},"bucket":{"llmrewrite":"4","llmcachewrite":"1","llmplan":"2"},"error_code":0,"error_msg":"","timestamp":"1682390791","debug":"1"}'
+}
+
+
+set -x
+
+#run 阿里巴巴十八罗汉是谁
+#run 创始人是谁
+#run 创立时间是哪年
+
+run 区块链技术应用的前景和风险
+
+#run 爸爸的爸爸叫什么
+#run 海底捞张勇
+#run 阿里巴巴十八罗汉是谁
+#run 它创始人是谁
+#run 它的股价多少钱
+#run 给我创作一首关于它的诗

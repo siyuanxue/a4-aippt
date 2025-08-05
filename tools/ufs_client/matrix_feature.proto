@@ -1,0 +1,57 @@
+package A8.ufs_client.proto.feature;
+
+enum ElementType {
+    BOOL = 0;
+    INT = 1;
+    DOUBLE = 2;
+    STRING = 3;
+    
+    // 未支持
+    BYTES = 4;
+
+    // For Extend
+    EXTEND_1 = 5;
+    EXTEND_2 = 6;
+    EXTEND_3 = 7;
+}
+
+message Element {
+    optional ElementType type = 1;
+
+    optional bool bool_value = 2;
+    optional sint64 int_value = 3;
+    optional double double_value = 4;
+    optional string string_value = 5;
+    
+    // 暂时未用到
+    optional bytes bytes_value = 6;
+}
+
+message Array {
+    optional ElementType element_type = 1;
+    repeated Element elements = 2;
+}
+
+message Matrix2D {
+    optional ElementType element_type = 1;
+    repeated Array arrays = 2;
+}
+
+message Matrix3D {
+    optional ElementType element_type = 1;
+    repeated Matrix2D matrix2ds = 2;
+}
+
+message Matrix {
+    // 矩阵维度
+    optional int32 dim = 1;
+    // 矩阵元素类型
+    optional ElementType element_type = 2;
+    // 一维向量实际存储于array中
+    optional Array array = 3;
+    // 二维矩阵实际存储于matrix2d中
+    optional Matrix2D matrix2d = 4;
+
+    // 三维矩阵实际存储于matrix3d中, 目前暂时未用到
+    optional Matrix3D matrix3d = 5;
+}

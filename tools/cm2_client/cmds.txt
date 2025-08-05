@@ -1,0 +1,1 @@
+./cm_query  -f ./na61_zeus_cm_ctrl.cfg -c getcluster -v 'sc_proxy_2' | awk '{if(/_spec/){print $1" "$4" "$5}}' RS='node' | awk '{print $2":"$4" "$6" "$8}' FS='[\:| ]'
